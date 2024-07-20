@@ -101,3 +101,23 @@ func RenderTexture(renderer *sdl.Renderer, imagePath string) {
 	// Desenhe o texture em cima de tudo
 	renderer.Copy(textureTexture, nil, &sdl.Rect{X: 0, Y: 0, W: vars.ScreenWidth, H: vars.ScreenHeight})
 }
+
+func RenderTextureAdjusted(renderer *sdl.Renderer, imagePath string, x, y, width, height int32) {
+	// Carregar a imagem de texture
+	textureSurface, err := sdl.LoadBMP(imagePath)
+	if err != nil {
+		fmt.Printf("Erro ao carregar imagem de texture: %v\n", err)
+		return
+	}
+	defer textureSurface.Free()
+
+	textureTexture, err := renderer.CreateTextureFromSurface(textureSurface)
+	if err != nil {
+		fmt.Printf("Erro ao criar textura de texture: %v\n", err)
+		return
+	}
+	defer textureTexture.Destroy()
+
+	// Desenhe a textura na posição e tamanho especificados
+	renderer.Copy(textureTexture, nil, &sdl.Rect{X: x, Y: y, W: width, H: height})
+}

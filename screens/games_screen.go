@@ -7,18 +7,20 @@ import (
 	"handheldui/input"
 	"handheldui/services"
 	"handheldui/vars"
+	"sync"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type GamesScreen struct {
-	scrollOffset       int
-	currentGameIndex   int
-	games              []map[string]interface{}
-	currentGameTexture *sdl.Texture
-	renderer           *sdl.Renderer
-	initialized        bool
-	listComponent      *components.ListComponent
+	scrollOffset     int
+	currentGameIndex int
+	currentImage     string
+	games            []map[string]interface{}
+	renderer         *sdl.Renderer
+	initialized      bool
+	listComponent    *components.ListComponent
+	textureMutex     sync.Mutex
 }
 
 func NewGamesScreen(renderer *sdl.Renderer) (*GamesScreen, error) {
@@ -57,12 +59,12 @@ func (g *GamesScreen) HandleInput(event input.InputEvent) {
 	case sdl.SCANCODE_DOWN:
 		g.currentGameIndex = (g.currentGameIndex + 1) % len(g.games)
 		g.scrollOffset = g.currentGameIndex
-		g.LoadGameImage()
+		go g.LoadGameImage() // Start loading the image asynchronously
 		g.listComponent.SetItems(g.games, g.currentGameIndex, g.scrollOffset)
 	case sdl.SCANCODE_UP:
 		g.currentGameIndex = (g.currentGameIndex - 1 + len(g.games)) % len(g.games)
 		g.scrollOffset = g.currentGameIndex
-		g.LoadGameImage()
+		go g.LoadGameImage() // Start loading the image asynchronously
 		g.listComponent.SetItems(g.games, g.currentGameIndex, g.scrollOffset)
 	case sdl.SCANCODE_B:
 		g.initialized = false
@@ -82,12 +84,12 @@ func (g *GamesScreen) LoadGameImage() {
 		gameName := g.games[g.currentGameIndex]["key"].(string)
 		imagePath := helpers.FetchGameImage(gameName)
 		if imagePath != "" {
-			texture, err := helpers.LoadTexture(g.renderer, imagePath)
-			if err != nil {
-				fmt.Printf("Erro ao carregar textura: %v\n", err)
-				return
-			}
-			g.currentGameTexture = texture
+			g.textureMutex.Lock()
+			g.currentImage = imagePath
+			g.textureMutex.Unlock()
+
+			// Debug message to confirm the texture is loaded
+			fmt.Printf("Imagem carregada para o jogo: %s\n", gameName)
 		}
 	}
 }
@@ -104,8 +106,15 @@ func (g *GamesScreen) Draw() {
 	g.listComponent.SetItems(g.games, g.currentGameIndex, g.scrollOffset)
 	g.listComponent.Draw()
 
-	if g.currentGameTexture != nil {
-		g.renderer.Copy(g.currentGameTexture, nil, &sdl.Rect{X: int32(vars.ScreenWidth) - 430, Y: 72, W: 350, H: 350})
+	g.textureMutex.Lock()
+	defer g.textureMutex.Unlock()
+	if g.currentImage != "" {
+		// Debug message to confirm the draw call
+		fmt.Println("Desenhando textura atual...")
+		helpers.RenderTextureAdjusted(g.renderer, g.currentImage, vars.ScreenWidth-340-84, 78, 340, 340)
+	} else {
+		// Debug message if no texture is available
+		fmt.Println("Nenhuma textura disponível para desenhar.")
 	}
 
 	helpers.RenderTexture(g.renderer, "assets/textures/ui_1280_720.bmp")
