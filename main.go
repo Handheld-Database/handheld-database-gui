@@ -23,8 +23,6 @@ func main() {
 	vars.ScreenWidth = int32(1280)
 	vars.ScreenHeight = int32(720)
 
-	detectedPlatform := "tsp"
-
 	if err := helpers.InitSDL(); err != nil {
 		panic(err)
 	}
@@ -60,15 +58,15 @@ func main() {
 	}
 	defer renderer.Destroy()
 
-	systemsScreen, err := screens.NewSystemsScreen(detectedPlatform, renderer)
+	systemsScreen, err := screens.NewSystemsScreen(renderer)
 	if err != nil {
 		panic(err)
 	}
-	gamesScreen, err := screens.NewGamesScreen(detectedPlatform, renderer)
+	gamesScreen, err := screens.NewGamesScreen(renderer)
 	if err != nil {
 		panic(err)
 	}
-	overviewScreen, err := screens.NewOverviewScreen(detectedPlatform, renderer)
+	overviewScreen, err := screens.NewOverviewScreen(renderer)
 	if err != nil {
 		panic(err)
 	}

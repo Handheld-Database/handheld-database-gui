@@ -19,16 +19,15 @@ type OverviewScreen struct {
 	gameImage        *sdl.Texture
 }
 
-func NewOverviewScreen(platform string, renderer *sdl.Renderer) (*OverviewScreen, error) {
+func NewOverviewScreen(renderer *sdl.Renderer) (*OverviewScreen, error) {
 	// Inicializar SDL_ttf
 	if err := ttf.Init(); err != nil {
 		return nil, fmt.Errorf("erro ao inicializar SDL_ttf: %w", err)
 	}
 
 	s := &OverviewScreen{
-		detectedPlatform: platform,
-		renderer:         renderer,
-		currentView:      "Overview",
+		renderer:    renderer,
+		currentView: "Overview",
 	}
 
 	return s, nil
