@@ -40,6 +40,10 @@ func main() {
 		panic(err)
 	}
 
+	if err := helpers.InitFont(kenneyPixelSquare, &vars.BodyBigFont, 58); err != nil {
+		panic(err)
+	}
+
 	if err := helpers.InitFont(kenneyBold, &vars.HeaderFont, 18); err != nil {
 		panic(err)
 	}

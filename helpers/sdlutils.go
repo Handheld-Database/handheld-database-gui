@@ -112,24 +112,79 @@ func RenderText(text string, color sdl.Color, font *ttf.Font) (*sdl.Surface, err
 	return textSurface, nil
 }
 
-func RenderTexture(renderer *sdl.Renderer, imagePath string) {
-	// Carregar a imagem de texture
+func RenderTexture(renderer *sdl.Renderer, imagePath string, startQuadrant, endQuadrant string) {
+	// Carregar a imagem de textura
 	textureSurface, err := sdl.LoadBMP(imagePath)
 	if err != nil {
-		fmt.Printf("Erro ao carregar imagem de texture: %v\n", err)
+		fmt.Printf("Erro ao carregar imagem de textura: %v\n", err)
 		return
 	}
 	defer textureSurface.Free()
 
 	textureTexture, err := renderer.CreateTextureFromSurface(textureSurface)
 	if err != nil {
-		fmt.Printf("Erro ao criar textura de texture: %v\n", err)
+		fmt.Printf("Erro ao criar textura de textura: %v\n", err)
 		return
 	}
 	defer textureTexture.Destroy()
 
-	// Desenhe o texture em cima de tudo
-	renderer.Copy(textureTexture, nil, &sdl.Rect{X: 0, Y: 0, W: vars.ScreenWidth, H: vars.ScreenHeight})
+	// Obter a largura e altura da tela
+	screenWidth, screenHeight := vars.ScreenWidth, vars.ScreenHeight
+	halfWidth, halfHeight := screenWidth/2, screenHeight/2
+
+	// Definir os retângulos para cada quadrante
+	quadrants := map[string]sdl.Rect{
+		"Q1": {X: halfWidth, Y: 0, W: halfWidth, H: halfHeight},          // Q1
+		"Q2": {X: 0, Y: 0, W: halfWidth, H: halfHeight},                  // Q2
+		"Q3": {X: 0, Y: halfHeight, W: halfWidth, H: halfHeight},         // Q3
+		"Q4": {X: halfWidth, Y: halfHeight, W: halfWidth, H: halfHeight}, // Q4
+	}
+
+	// Verificar se os quadrantes são válidos
+	startRect, startOk := quadrants[startQuadrant]
+	endRect, endOk := quadrants[endQuadrant]
+
+	if !startOk || !endOk {
+		fmt.Printf("Quadrante(s) desconhecido(s): %s, %s\n", startQuadrant, endQuadrant)
+		return
+	}
+
+	// Calcular o retângulo que cobre a área entre os quadrantes
+	dstRect := sdl.Rect{
+		X: min(startRect.X, endRect.X),
+		Y: min(startRect.Y, endRect.Y),
+		W: max(startRect.X+startRect.W, endRect.X+endRect.W) - min(startRect.X, endRect.X),
+		H: max(startRect.Y+startRect.H, endRect.Y+endRect.H) - min(startRect.Y, endRect.Y),
+	}
+
+	// Obter as dimensões da textura
+	textureWidth, textureHeight := textureSurface.W, textureSurface.H
+
+	// Calcular o retângulo de origem da textura
+	srcRect := sdl.Rect{
+		X: 0,
+		Y: 0,
+		W: int32(textureWidth),
+		H: int32(textureHeight),
+	}
+
+	// Renderizar a textura ajustada para a área entre os quadrantes
+	renderer.Copy(textureTexture, &srcRect, &dstRect)
+}
+
+// Funções auxiliares para calcular min e max
+func min(a, b int32) int32 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b int32) int32 {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 func RenderTextureAdjusted(renderer *sdl.Renderer, imagePath string, x, y, width, height int32) {

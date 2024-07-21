@@ -96,7 +96,7 @@ func (g *GamesScreen) Draw() {
 	g.renderer.SetDrawColor(255, 255, 255, 255)
 	g.renderer.Clear()
 
-	helpers.RenderTexture(g.renderer, "assets/textures/bg.bmp")
+	helpers.RenderTexture(g.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	helpers.DrawText(g.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
 
@@ -111,7 +111,23 @@ func (g *GamesScreen) Draw() {
 		fmt.Println("Nenhuma textura disponível para desenhar.")
 	}
 
-	helpers.RenderTexture(g.renderer, "assets/textures/ui_1280_720.bmp")
+	rankAssets := map[string]string{
+		"PLATINUM": "assets/textures/ui_game_display_rank_platinum_1280_720.bmp",
+		"GOLD":     "assets/textures/ui_game_display_rank_gold_1280_720.bmp",
+		"SILVER":   "assets/textures/ui_game_display_rank_silver_1280_720.bmp",
+		"BRONZE":   "assets/textures/ui_game_display_rank_bronze_1280_720.bmp",
+		"FAULTY":   "assets/textures/ui_game_display_rank_faulty_1280_720.bmp",
+	}
+	selectedIndex := g.listComponent.GetSelectedIndex()
+	gameRank := g.games[selectedIndex]["rank"].(string)
+
+	helpers.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720.bmp", "Q1", "Q4")
+	helpers.RenderTexture(g.renderer, rankAssets[gameRank], "Q1", "Q1")
+	helpers.RenderTexture(g.renderer, "assets/textures/ui_game_display_details_1280_720.bmp", "Q4", "Q4")
+	helpers.RenderTexture(g.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
+
+	var postitionRank = sdl.Point{X: vars.ScreenWidth - 420, Y: vars.ScreenHeight - 270}
+	helpers.DrawText(g.renderer, gameRank, postitionRank, vars.Colors.BLACK, vars.BodyBigFont)
 
 	g.renderer.Present()
 }

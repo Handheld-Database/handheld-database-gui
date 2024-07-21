@@ -76,13 +76,15 @@ func (s *SystemsScreen) Draw() {
 	s.renderer.SetDrawColor(255, 255, 255, 255)
 	s.renderer.Clear()
 
-	helpers.RenderTexture(s.renderer, "assets/textures/bg.bmp")
+	helpers.RenderTexture(s.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Desenhar o título atual
 	helpers.DrawText(s.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
 
 	// Desenhe o componente da lista
 	s.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
+
+	helpers.RenderTexture(s.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 
 	s.renderer.Present()
 }
