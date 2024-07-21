@@ -52,17 +52,19 @@ func (s *OverviewScreen) Draw() {
 		return
 	}
 
-	systems := systemsData["systems"].([]interface{})
-	s.systems = make([]map[string]interface{}, len(systems))
-	for i, system := range systems {
-		s.systems[i] = system.(map[string]interface{})
+	if systemsData["systems"] != nil {
+		systems := systemsData["systems"].([]interface{})
+		s.systems = make([]map[string]interface{}, len(systems))
+		for i, system := range systems {
+			s.systems[i] = system.(map[string]interface{})
+		}
 	}
 
 	s.renderer.SetDrawColor(255, 255, 255, 255)
 	s.renderer.Clear()
 
 	// Desenhar o título atual
-	titleColor := sdl.Color{R: 0, G: 0, B: 0, A: 255}
+	titleColor := vars.Colors.WHITE
 	textSurface, err := helpers.RenderText(s.currentView, titleColor, vars.BodyFont)
 	if err != nil {
 		fmt.Printf("Erro ao renderizar texto: %v\n", err)
@@ -127,7 +129,7 @@ func (s *OverviewScreen) drawDetails() {
 		return
 	}
 
-	textSurface, err := helpers.RenderText(detailsText, sdl.Color{R: 0, G: 0, B: 0, A: 255}, vars.BodyFont)
+	textSurface, err := helpers.RenderText(detailsText, sdl.Color{R: 0, G: 0, B: 0, A: 255}, vars.HeaderFont)
 	if err != nil {
 		fmt.Printf("Erro ao renderizar texto: %v\n", err)
 		return

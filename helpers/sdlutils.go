@@ -73,6 +73,36 @@ func LoadFont(rwops *sdl.RWops, size int) (*ttf.Font, error) {
 	return font, nil
 }
 
+// DrawText é uma função que desenha um texto na tela com base na posição, cor e fonte fornecidos.
+func DrawText(renderer *sdl.Renderer, text string, position sdl.Point, color sdl.Color, font *ttf.Font) {
+	// Renderize o texto para uma superfície
+	textSurface, err := RenderText(text, color, font)
+	if err != nil {
+		fmt.Printf("Erro ao renderizar texto: %v\n", err)
+		return
+	}
+	defer textSurface.Free()
+
+	// Crie uma textura a partir da superfície
+	textTexture, err := renderer.CreateTextureFromSurface(textSurface)
+	if err != nil {
+		fmt.Printf("Erro ao criar textura: %v\n", err)
+		return
+	}
+	defer textTexture.Destroy()
+
+	// Defina o retângulo de destino para a textura
+	destinationRect := sdl.Rect{
+		X: position.X,
+		Y: position.Y,
+		W: int32(textSurface.W),
+		H: int32(textSurface.H),
+	}
+
+	// Copie a textura para o renderizador
+	renderer.Copy(textTexture, nil, &destinationRect)
+}
+
 // RenderText renders text to an SDL surface
 func RenderText(text string, color sdl.Color, font *ttf.Font) (*sdl.Surface, error) {
 	textSurface, err := font.RenderUTF8Blended(text, color)

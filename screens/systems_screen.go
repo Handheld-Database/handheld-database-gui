@@ -14,15 +14,13 @@ import (
 
 type SystemsScreen struct {
 	detectedPlatform string
-	selectedSystem   int
-	systems          []map[string]interface{}
 	renderer         *sdl.Renderer
 	initialized      bool
 	listComponent    *components.ListComponent
 }
 
 func NewSystemsScreen(renderer *sdl.Renderer) (*SystemsScreen, error) {
-	listComponent := components.NewListComponent(renderer, "Systems List", func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, "Systems List", 20, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 
@@ -47,33 +45,29 @@ func (s *SystemsScreen) InitSystems() {
 	}
 
 	systems := systemsData["systems"].([]interface{})
-	s.systems = make([]map[string]interface{}, len(systems))
+	systemsList := make([]map[string]interface{}, len(systems))
 	for i, system := range systems {
-		s.systems[i] = system.(map[string]interface{})
+		systemsList[i] = system.(map[string]interface{})
 	}
+	s.listComponent.SetItems(systemsList)
 	s.initialized = true
 }
 
 func (s *SystemsScreen) HandleInput(event input.InputEvent) {
-	if len(s.systems) == 0 {
+	if len(s.listComponent.GetItems()) == 0 {
 		return
 	}
 
-	systemsCount := len(s.systems)
-
 	switch event.KeyCode {
 	case sdl.SCANCODE_DOWN:
-		s.selectedSystem = (s.selectedSystem + 1) % systemsCount
+		s.listComponent.ScrollDown()
 	case sdl.SCANCODE_UP:
-		s.selectedSystem = (s.selectedSystem - 1 + systemsCount) % systemsCount
+		s.listComponent.ScrollUp()
 	case sdl.SCANCODE_A:
 		s.showGames()
 	case sdl.SCANCODE_B:
 		os.Exit(0)
 	}
-
-	// Atualize o ListComponent
-	s.listComponent.SetItems(s.systems, s.selectedSystem, s.selectedSystem)
 }
 
 func (s *SystemsScreen) Draw() {
@@ -84,19 +78,22 @@ func (s *SystemsScreen) Draw() {
 
 	helpers.RenderTexture(s.renderer, "assets/textures/bg.bmp")
 
-	// Atualize o componente da lista com os dados atuais
-	s.listComponent.SetItems(s.systems, s.selectedSystem, s.selectedSystem)
-	s.listComponent.Draw()
+	// Desenhar o título atual
+	helpers.DrawText(s.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+
+	// Desenhe o componente da lista
+	s.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
 
 	s.renderer.Present()
 }
 
 func (s *SystemsScreen) showGames() {
-	if len(s.systems) == 0 {
+	if len(s.listComponent.GetItems()) == 0 {
 		return
 	}
 
-	selectedSystemKey := s.systems[s.selectedSystem]["key"].(string)
+	selectedSystem := s.listComponent.GetItems()[s.listComponent.GetSelectedIndex()]
+	selectedSystemKey := selectedSystem["key"].(string)
 	fmt.Printf("Selecionado sistema: %s\n", selectedSystemKey)
 	vars.CurrentSystem = selectedSystemKey
 	vars.CurrentScreen = "games_screen"
