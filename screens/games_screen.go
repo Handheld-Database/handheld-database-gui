@@ -22,7 +22,7 @@ type GamesScreen struct {
 }
 
 func NewGamesScreen(renderer *sdl.Renderer) (*GamesScreen, error) {
-	listComponent := components.NewListComponent(renderer, "Games List", 20, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, "Games List", 19, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 
@@ -55,15 +55,15 @@ func (g *GamesScreen) HandleInput(event input.InputEvent) {
 	}
 
 	switch event.KeyCode {
-	case sdl.SCANCODE_DOWN:
+	case "DOWN":
 		g.listComponent.ScrollDown()
-	case sdl.SCANCODE_UP:
+	case "UP":
 		g.listComponent.ScrollUp()
-	case sdl.SCANCODE_B:
+	case "B":
 		g.initialized = false
 		g.listComponent.SetItems([]map[string]interface{}{})
 		vars.CurrentScreen = "systems_screen"
-	case sdl.SCANCODE_A:
+	case "A":
 		selectedGame := g.games[g.listComponent.GetSelectedIndex()]
 		vars.CurrentGame = selectedGame["key"].(string)
 		vars.CurrentScreen = "overview_screen"

@@ -5,7 +5,7 @@ import (
 )
 
 type InputEvent struct {
-	KeyCode sdl.Scancode
+	KeyCode string
 }
 
 var InputChannel = make(chan InputEvent)
@@ -19,19 +19,19 @@ func listenForKeyboardEvents() {
 		keyState := sdl.GetKeyboardState()
 
 		if keyState[sdl.SCANCODE_DOWN] != 0 {
-			InputChannel <- InputEvent{KeyCode: sdl.SCANCODE_DOWN}
+			InputChannel <- InputEvent{KeyCode: "DOWN"}
 			PlaySound("assets/sounds/SFX_UI_MenuSelections.wav", 10, false)
 		}
 		if keyState[sdl.SCANCODE_UP] != 0 {
-			InputChannel <- InputEvent{KeyCode: sdl.SCANCODE_UP}
+			InputChannel <- InputEvent{KeyCode: "UP"}
 			PlaySound("assets/sounds/SFX_UI_MenuSelections.wav", 10, false)
 		}
 		if keyState[sdl.SCANCODE_A] != 0 {
-			InputChannel <- InputEvent{KeyCode: sdl.SCANCODE_A}
+			InputChannel <- InputEvent{KeyCode: "A"}
 			PlaySound("assets/sounds/SFX_UI_Confirm.wav", 10, false)
 		}
 		if keyState[sdl.SCANCODE_B] != 0 {
-			InputChannel <- InputEvent{KeyCode: sdl.SCANCODE_B}
+			InputChannel <- InputEvent{KeyCode: "B"}
 			PlaySound("assets/sounds/SFX_UI_Cancel.wav", 10, false)
 		}
 

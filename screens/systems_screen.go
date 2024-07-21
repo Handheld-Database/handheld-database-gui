@@ -59,13 +59,13 @@ func (s *SystemsScreen) HandleInput(event input.InputEvent) {
 	}
 
 	switch event.KeyCode {
-	case sdl.SCANCODE_DOWN:
+	case "DOWN":
 		s.listComponent.ScrollDown()
-	case sdl.SCANCODE_UP:
+	case "UP":
 		s.listComponent.ScrollUp()
-	case sdl.SCANCODE_A:
+	case "A":
 		s.showGames()
-	case sdl.SCANCODE_B:
+	case "B":
 		os.Exit(0)
 	}
 }

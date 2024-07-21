@@ -14,8 +14,8 @@ import (
 //go:embed assets/fonts/Kenney-Pixel-Square.ttf
 var kenneyPixelSquare []byte
 
-//go:embed assets/fonts/Kenney-Bold.ttf
-var kenneyBold []byte
+//go:embed assets/fonts/Kenney-Space.ttf
+var KenneySpace []byte
 
 func main() {
 	vars.InitVars()
@@ -36,7 +36,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := helpers.InitFont(kenneyPixelSquare, &vars.BodyFont, 14); err != nil {
+	if err := helpers.InitFont(kenneyPixelSquare, &vars.BodyFont, 24); err != nil {
 		panic(err)
 	}
 
@@ -44,7 +44,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := helpers.InitFont(kenneyBold, &vars.HeaderFont, 18); err != nil {
+	if err := helpers.InitFont(KenneySpace, &vars.HeaderFont, 28); err != nil {
 		panic(err)
 	}
 

@@ -25,7 +25,7 @@ func InitTTF() error {
 }
 
 func InitMixer() error {
-	if err := mix.Init(mix.INIT_MP3 | mix.INIT_FLAC | mix.INIT_OGG); err != nil {
+	if err := mix.Init(mix.INIT_MP3 | mix.INIT_OGG); err != nil {
 		return fmt.Errorf("failed to initialize mixer: %w", err)
 	}
 	if err := mix.OpenAudio(44100, mix.DEFAULT_FORMAT, 2, 4096); err != nil {

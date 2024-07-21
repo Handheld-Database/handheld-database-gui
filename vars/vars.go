@@ -23,6 +23,7 @@ var (
 	HeaderFont      *ttf.Font
 	BodyBigFont     *ttf.Font
 	Colors          FontColors
+	ControlType     string
 )
 
 func InitVars() {
@@ -32,6 +33,7 @@ func InitVars() {
 	CurrentScreen = "systems_screen"
 	CurrentSystem = ""
 	CurrentGame = ""
+	ControlType = "keyboard"
 	BodyFont = nil
 	HeaderFont = nil
 	BodyBigFont = nil

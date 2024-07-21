@@ -35,11 +35,7 @@ func NewOverviewScreen(renderer *sdl.Renderer) (*OverviewScreen, error) {
 
 func (s *OverviewScreen) HandleInput(event input.InputEvent) {
 	switch event.KeyCode {
-	case sdl.SCANCODE_X:
-		s.currentView = "Details"
-	case sdl.SCANCODE_Y:
-		s.currentView = "Overview"
-	case sdl.SCANCODE_B:
+	case "B":
 		vars.CurrentScreen = "games_screen"
 		vars.CurrentGame = ""
 	}
