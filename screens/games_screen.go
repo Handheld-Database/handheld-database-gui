@@ -99,7 +99,7 @@ func (g *GamesScreen) Draw() {
 
 	helpers.RenderTexture(g.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
-	helpers.DrawText(g.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	helpers.DrawText(g.renderer, "Games List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
 
 	g.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
 
