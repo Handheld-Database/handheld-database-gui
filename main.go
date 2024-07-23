@@ -2,6 +2,10 @@ package main
 
 import (
 	_ "embed"
+	"log"
+	"os"
+	"runtime/debug"
+
 	"handheldui/helpers"
 	"handheldui/input"
 	"handheldui/output"
@@ -22,6 +26,16 @@ var KenneySpace []byte
 var NotoSans []byte
 
 func main() {
+	// Defer a function to handle panics and exit with -1
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Unhandled error: %v\n", r)
+			log.Println("Stack trace:")
+			debug.PrintStack()
+			os.Exit(-1)
+		}
+	}()
+
 	vars.InitVars()
 
 	vars.ScreenWidth = int32(1280)
@@ -118,7 +132,7 @@ func main() {
 				handler(inputEvent)
 			}
 		default:
-			// Not event received
+			// No event received
 		}
 
 		if drawFunc, ok := screensMap[vars.CurrentScreen]; ok {

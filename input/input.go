@@ -49,8 +49,8 @@ func listenForControllerEvents() {
 	controllerMappings := map[sdl.GameControllerButton]string{
 		sdl.CONTROLLER_BUTTON_DPAD_DOWN: "DOWN",
 		sdl.CONTROLLER_BUTTON_DPAD_UP:   "UP",
-		sdl.CONTROLLER_BUTTON_A:         "A",
-		sdl.CONTROLLER_BUTTON_B:         "B",
+		sdl.CONTROLLER_BUTTON_A:         "B",
+		sdl.CONTROLLER_BUTTON_B:         "A",
 	}
 
 	for {
