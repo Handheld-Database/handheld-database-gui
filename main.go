@@ -17,6 +17,9 @@ var kenneyPixelSquare []byte
 //go:embed assets/fonts/Kenney-Space.ttf
 var KenneySpace []byte
 
+//go:embed assets/fonts/NotoSans_Condensed-SemiBold.ttf
+var NotoSans []byte
+
 func main() {
 	vars.InitVars()
 
@@ -41,6 +44,10 @@ func main() {
 	}
 
 	if err := helpers.InitFont(kenneyPixelSquare, &vars.BodyBigFont, 58); err != nil {
+		panic(err)
+	}
+
+	if err := helpers.InitFont(NotoSans, &vars.LongTextFont, 24); err != nil {
 		panic(err)
 	}
 

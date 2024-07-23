@@ -1,158 +1,80 @@
 package screens
 
 import (
-	"fmt"
+	"handheldui/components"
 	"handheldui/helpers"
 	"handheldui/input"
 	"handheldui/services"
 	"handheldui/vars"
+	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
-	"github.com/veandco/go-sdl2/ttf"
 )
 
 type OverviewScreen struct {
-	detectedPlatform string
-	systems          []map[string]interface{}
-	renderer         *sdl.Renderer
-	currentView      string
-	gameImage        *sdl.Texture
+	renderer      *sdl.Renderer
+	textComponent *components.TextComponent
+	textContent   string
+	initialized   bool
 }
 
 func NewOverviewScreen(renderer *sdl.Renderer) (*OverviewScreen, error) {
-	// Inicializar SDL_ttf
-	if err := ttf.Init(); err != nil {
-		return nil, fmt.Errorf("erro ao inicializar SDL_ttf: %w", err)
-	}
-
-	s := &OverviewScreen{
-		renderer:    renderer,
-		currentView: "Overview",
-	}
-
-	return s, nil
+	return &OverviewScreen{
+		renderer: renderer,
+	}, nil
 }
 
-func (s *OverviewScreen) HandleInput(event input.InputEvent) {
+func (o *OverviewScreen) InitOverview() {
+	if o.initialized {
+		return
+	}
+
+	overview, err := services.FetchGameOverview(vars.CurrentGame)
+	if err != nil {
+		overview = "Help us to find a overview!"
+	}
+
+	review, err := services.FetchGameMarkdown(vars.CurrentPlatform, vars.CurrentSystem, vars.CurrentGame)
+	if err != nil {
+		overview = "Ops, game description not found!"
+	}
+
+	o.textContent = helpers.MarkdownToPlaintext(strings.ReplaceAll(review, "%game_overview%", overview))
+	o.textComponent = components.NewTextComponent(o.renderer, o.textContent, vars.LongTextFont, 18, 1200)
+
+	o.initialized = true
+}
+
+func (o *OverviewScreen) HandleInput(event input.InputEvent) {
 	switch event.KeyCode {
+	case "DOWN":
+		o.textComponent.ScrollDown()
+	case "UP":
+		o.textComponent.ScrollUp()
 	case "B":
-		vars.CurrentScreen = "games_screen"
 		vars.CurrentGame = ""
+		vars.CurrentScreen = "games_screen"
+		o.initialized = false
 	}
 }
 
-func (s *OverviewScreen) Draw() {
-	systemsData, err := services.FetchPlatform(s.detectedPlatform)
-	if err != nil {
-		fmt.Println("Error fetching platform data:", err)
-		return
-	}
+func (o *OverviewScreen) Draw() {
+	o.InitOverview()
 
-	if systemsData["systems"] != nil {
-		systems := systemsData["systems"].([]interface{})
-		s.systems = make([]map[string]interface{}, len(systems))
-		for i, system := range systems {
-			s.systems[i] = system.(map[string]interface{})
-		}
-	}
+	o.renderer.SetDrawColor(0, 0, 0, 255) // Cor de fundo
+	o.renderer.Clear()
 
-	s.renderer.SetDrawColor(255, 255, 255, 255)
-	s.renderer.Clear()
+	helpers.RenderTexture(o.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
-	// Desenhar o título atual
-	titleColor := vars.Colors.WHITE
-	textSurface, err := helpers.RenderText(s.currentView, titleColor, vars.BodyFont)
-	if err != nil {
-		fmt.Printf("Erro ao renderizar texto: %v\n", err)
-		return
-	}
-	defer textSurface.Free()
+	helpers.RenderTexture(o.renderer, "assets/textures/bg_overlay.bmp", "Q2", "Q4")
 
-	titleTexture, err := s.renderer.CreateTextureFromSurface(textSurface)
-	if err != nil {
-		fmt.Printf("Erro ao criar textura: %v\n", err)
-		return
-	}
-	defer titleTexture.Destroy()
+	// Desenhar o título
+	helpers.DrawText(o.renderer, "Overview", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
 
-	s.renderer.Copy(titleTexture, nil, &sdl.Rect{X: 500, Y: 10, W: int32(textSurface.W), H: int32(textSurface.H)})
+	// Desenhe o componente de texto com rolagem
+	o.textComponent.Draw(vars.Colors.WHITE)
 
-	// Desenhar a imagem do jogo no canto superior direito
-	if s.gameImage != nil {
-		s.renderer.Copy(s.gameImage, nil, &sdl.Rect{X: 500, Y: 60, W: 100, H: 100})
-	}
+	helpers.RenderTexture(o.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 
-	// Desenhar o conteúdo de Overview ou Details
-	if s.currentView == "Overview" {
-		s.drawOverview()
-	} else {
-		s.drawDetails()
-	}
-
-	s.renderer.Present()
-}
-
-func (s *OverviewScreen) drawOverview() {
-	// Lógica para desenhar a visão Overview
-	overviewText, err := services.FetchGameOverview(vars.CurrentGame)
-	if err != nil {
-		fmt.Println("Error fetching overview:", err)
-		return
-	}
-
-	textSurface, err := helpers.RenderText(overviewText, sdl.Color{R: 0, G: 0, B: 0, A: 255}, vars.BodyFont)
-	if err != nil {
-		fmt.Printf("Erro ao renderizar texto: %v\n", err)
-		return
-	}
-	defer textSurface.Free()
-
-	overviewTexture, err := s.renderer.CreateTextureFromSurface(textSurface)
-	if err != nil {
-		fmt.Printf("Erro ao criar textura: %v\n", err)
-		return
-	}
-	defer overviewTexture.Destroy()
-
-	s.renderer.Copy(overviewTexture, nil, &sdl.Rect{X: 40, Y: 200, W: int32(textSurface.W), H: int32(textSurface.H)})
-}
-
-func (s *OverviewScreen) drawDetails() {
-	// Lógica para desenhar a visão Details
-	detailsText, err := services.FetchGameMarkdown(s.detectedPlatform, vars.CurrentSystem, vars.CurrentGame)
-	if err != nil {
-		fmt.Println("Error fetching details:", err)
-		return
-	}
-
-	textSurface, err := helpers.RenderText(detailsText, sdl.Color{R: 0, G: 0, B: 0, A: 255}, vars.HeaderFont)
-	if err != nil {
-		fmt.Printf("Erro ao renderizar texto: %v\n", err)
-		return
-	}
-	defer textSurface.Free()
-
-	detailsTexture, err := s.renderer.CreateTextureFromSurface(textSurface)
-	if err != nil {
-		fmt.Printf("Erro ao criar textura: %v\n", err)
-		return
-	}
-	defer detailsTexture.Destroy()
-
-	s.renderer.Copy(detailsTexture, nil, &sdl.Rect{X: 40, Y: 200, W: int32(textSurface.W), H: int32(textSurface.H)})
-}
-
-func (s *OverviewScreen) LoadGameImage(imagePath string) error {
-	imageSurface, err := sdl.LoadBMP(imagePath)
-	if err != nil {
-		return fmt.Errorf("erro ao carregar imagem: %w", err)
-	}
-	defer imageSurface.Free()
-
-	s.gameImage, err = s.renderer.CreateTextureFromSurface(imageSurface)
-	if err != nil {
-		return fmt.Errorf("erro ao criar textura de imagem: %w", err)
-	}
-
-	return nil
+	o.renderer.Present()
 }

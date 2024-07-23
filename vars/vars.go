@@ -22,6 +22,7 @@ var (
 	BodyFont        *ttf.Font
 	HeaderFont      *ttf.Font
 	BodyBigFont     *ttf.Font
+	LongTextFont    *ttf.Font
 	Colors          FontColors
 	ControlType     string
 )
@@ -37,6 +38,7 @@ func InitVars() {
 	BodyFont = nil
 	HeaderFont = nil
 	BodyBigFont = nil
+	LongTextFont = nil
 	Colors = FontColors{
 		WHITE:     sdl.Color{R: 255, G: 255, B: 255, A: 255},
 		PRIMARY:   sdl.Color{R: 255, G: 214, B: 255, A: 255},

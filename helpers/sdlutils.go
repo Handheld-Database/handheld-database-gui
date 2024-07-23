@@ -3,6 +3,7 @@ package helpers
 import (
 	"fmt"
 	"handheldui/vars"
+	"strings"
 
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/mix"
@@ -205,4 +206,42 @@ func RenderTextureAdjusted(renderer *sdl.Renderer, imagePath string, x, y, width
 
 	// Desenhe a textura na posição e tamanho especificados
 	renderer.Copy(textureTexture, nil, &sdl.Rect{X: x, Y: y, W: width, H: height})
+}
+
+// WrapText divide um texto longo em várias linhas com base na largura máxima especificada.
+func WrapText(text string, font *ttf.Font, maxWidth int) []string {
+	words := strings.Fields(text)
+	var lines []string
+	var currentLine string
+
+	for _, word := range words {
+		lineWithWord := currentLine + word + " "
+		lineWidth := textWidth(font, lineWithWord)
+
+		if lineWidth > maxWidth {
+			if len(currentLine) > 0 {
+				lines = append(lines, strings.TrimSpace(currentLine))
+			}
+			currentLine = word + " "
+		} else {
+			currentLine = lineWithWord
+		}
+	}
+
+	if len(currentLine) > 0 {
+		lines = append(lines, strings.TrimSpace(currentLine))
+	}
+
+	return lines
+}
+
+// textWidth calcula a largura de uma string de texto com base na fonte fornecida.
+func textWidth(font *ttf.Font, text string) int {
+	surface, err := font.RenderUTF8Blended(text, sdl.Color{R: 255, G: 255, B: 255, A: 255})
+	if err != nil {
+		return 0
+	}
+	defer surface.Free()
+
+	return int(surface.W)
 }

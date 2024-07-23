@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"handheldui/helpers"
 	"io"
 	"net/http"
 	"strings"
@@ -126,7 +127,7 @@ func FetchGameOverview(gameKey string) (string, error) {
 		return "", fmt.Errorf("error reading response body: %v", err)
 	}
 
-	return string(body), nil
+	return helpers.MarkdownToPlaintext(string(body)), nil
 }
 
 // FetchGameMarkdown fetches the markdown content for a given game.
