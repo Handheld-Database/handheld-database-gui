@@ -12,7 +12,7 @@ import (
 )
 
 func InitSDL() error {
-	if err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_AUDIO); err != nil {
+	if err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_AUDIO | sdl.INIT_JOYSTICK | sdl.INIT_GAMECONTROLLER); err != nil {
 		return fmt.Errorf("erro ao inicializar SDL: %w", err)
 	}
 	return nil
