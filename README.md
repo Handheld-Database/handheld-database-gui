@@ -11,3 +11,9 @@ A graphical interface made with SDL for low-end devices
 6. export GOPATH=$HOME/go
 7. export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 8. source ~/.profile
+
+# How to run?
+
+```
+go run main.go
+```
