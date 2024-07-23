@@ -31,12 +31,12 @@ func (o *OverviewScreen) InitOverview() {
 
 	overview, err := services.FetchGameOverview(vars.CurrentGame)
 	if err != nil {
-		overview = "Help us to find a overview!"
+		overview = "Help us to find an overview!"
 	}
 
 	review, err := services.FetchGameMarkdown(vars.CurrentPlatform, vars.CurrentSystem, vars.CurrentGame)
 	if err != nil {
-		overview = "Ops, game description not found!"
+		overview = "Oops, game description not found!"
 	}
 
 	o.textContent = helpers.MarkdownToPlaintext(strings.ReplaceAll(review, "%game_overview%", overview))
@@ -61,17 +61,17 @@ func (o *OverviewScreen) HandleInput(event input.InputEvent) {
 func (o *OverviewScreen) Draw() {
 	o.InitOverview()
 
-	o.renderer.SetDrawColor(0, 0, 0, 255) // Cor de fundo
+	o.renderer.SetDrawColor(0, 0, 0, 255) // Background color
 	o.renderer.Clear()
 
 	helpers.RenderTexture(o.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	helpers.RenderTexture(o.renderer, "assets/textures/bg_overlay.bmp", "Q2", "Q4")
 
-	// Desenhar o título
+	// Draw the title
 	helpers.DrawText(o.renderer, "Overview", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
 
-	// Desenhe o componente de texto com rolagem
+	// Draw the text component with scrolling
 	o.textComponent.Draw(vars.Colors.WHITE)
 
 	helpers.RenderTexture(o.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")

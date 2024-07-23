@@ -5,6 +5,7 @@ import (
 	"handheldui/components"
 	"handheldui/helpers"
 	"handheldui/input"
+	"handheldui/output"
 	"handheldui/services"
 	"handheldui/vars"
 	"sync"
@@ -41,7 +42,7 @@ func (g *GamesScreen) InitGames() {
 
 	games, err := services.FetchGames(vars.CurrentPlatform, vars.CurrentSystem)
 	if err != nil {
-		fmt.Printf("Erro ao buscar jogos: %v\n", err)
+		output.Printf("Error fetching games: %v\n", err)
 		return
 	}
 	g.games = games
@@ -81,7 +82,7 @@ func (g *GamesScreen) LoadGameImage() {
 			g.textureMutex.Unlock()
 
 			// Debug message to confirm the texture is loaded
-			fmt.Printf("Imagem carregada para o jogo: %s\n", gameName)
+			output.Printf("Image loaded for game: %s\n", gameName)
 		} else {
 			g.currentImage = ""
 		}
@@ -108,7 +109,7 @@ func (g *GamesScreen) Draw() {
 		helpers.RenderTextureAdjusted(g.renderer, g.currentImage, vars.ScreenWidth-340-84, 78, 340, 340)
 	} else {
 		helpers.RenderTextureAdjusted(g.renderer, "assets/textures/not_found.bmp", vars.ScreenWidth-340-84, 78, 340, 340)
-		fmt.Println("Nenhuma textura disponível para desenhar.")
+		output.Printf("No texture available to draw.")
 	}
 
 	rankAssets := map[string]string{
@@ -136,6 +137,6 @@ func (g *GamesScreen) ShowGameInfo() {
 	if len(g.games) > 0 {
 		selectedIndex := g.listComponent.GetSelectedIndex()
 		gameName := g.games[selectedIndex]["name"].(string)
-		fmt.Printf("Selecionado jogo: %s\n", gameName)
+		output.Printf("Selected game: %s\n", gameName)
 	}
 }

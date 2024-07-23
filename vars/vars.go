@@ -13,6 +13,7 @@ type FontColors struct {
 }
 
 var (
+	Debug           bool
 	ScreenWidth     int32
 	ScreenHeight    int32
 	CurrentPlatform string
@@ -28,6 +29,7 @@ var (
 )
 
 func InitVars() {
+	Debug = true
 	ScreenWidth = 0
 	ScreenHeight = 0
 	CurrentPlatform = "tsp"

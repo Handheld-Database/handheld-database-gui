@@ -5,6 +5,7 @@ import (
 	"handheldui/components"
 	"handheldui/helpers"
 	"handheldui/input"
+	"handheldui/output"
 	"handheldui/services"
 	"handheldui/vars"
 	"os"
@@ -40,7 +41,7 @@ func (s *SystemsScreen) InitSystems() {
 
 	systemsData, err := services.FetchPlatform(s.detectedPlatform)
 	if err != nil {
-		fmt.Println("Error fetching platform data:", err)
+		output.Printf("Error fetching platform data:", err)
 		return
 	}
 
@@ -78,10 +79,10 @@ func (s *SystemsScreen) Draw() {
 
 	helpers.RenderTexture(s.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
-	// Desenhar o título atual
+	// Draw the current title
 	helpers.DrawText(s.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
 
-	// Desenhe o componente da lista
+	// Draw the list component
 	s.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
 
 	helpers.RenderTexture(s.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
@@ -96,7 +97,7 @@ func (s *SystemsScreen) showGames() {
 
 	selectedSystem := s.listComponent.GetItems()[s.listComponent.GetSelectedIndex()]
 	selectedSystemKey := selectedSystem["key"].(string)
-	fmt.Printf("Selecionado sistema: %s\n", selectedSystemKey)
+	output.Printf("Selected system: %s\n", selectedSystemKey)
 	vars.CurrentSystem = selectedSystemKey
 	vars.CurrentScreen = "games_screen"
 }

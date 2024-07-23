@@ -1,8 +1,8 @@
 package components
 
 import (
-	"fmt"
 	"handheldui/helpers"
+	"handheldui/output"
 	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -87,14 +87,14 @@ func (t *TextComponent) Draw(primaryColor sdl.Color) {
 	for index, line := range visibleLines {
 		textSurface, err := helpers.RenderText(line, primaryColor, t.font)
 		if err != nil {
-			fmt.Printf("Erro ao renderizar texto: %v\n", err)
+			output.Printf("Error rendering text: %v\n", err)
 			return
 		}
 		defer textSurface.Free()
 
 		texture, err := t.renderer.CreateTextureFromSurface(textSurface)
 		if err != nil {
-			fmt.Printf("Erro ao criar textura: %v\n", err)
+			output.Printf("Error creating texture: %v\n", err)
 			return
 		}
 		defer texture.Destroy()

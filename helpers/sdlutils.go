@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"handheldui/output"
 	"handheldui/vars"
 	"strings"
 
@@ -13,14 +14,14 @@ import (
 
 func InitSDL() error {
 	if err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_AUDIO | sdl.INIT_JOYSTICK | sdl.INIT_GAMECONTROLLER); err != nil {
-		return fmt.Errorf("erro ao inicializar SDL: %w", err)
+		return fmt.Errorf("error initializing SDL: %w", err)
 	}
 	return nil
 }
 
 func InitTTF() error {
 	if err := ttf.Init(); err != nil {
-		return fmt.Errorf("erro ao inicializar SDL_ttf: %w", err)
+		return fmt.Errorf("error initializing SDL_ttf: %w", err)
 	}
 	return nil
 }
@@ -36,15 +37,15 @@ func InitMixer() error {
 	return nil
 }
 
-// adicionar font size e retornar font
+// add font size and return font
 func InitFont(fontTtf []byte, font **ttf.Font, size int) error {
 	rwops, err := sdl.RWFromMem(fontTtf)
 	if err != nil {
-		return fmt.Errorf("erro ao criar RWops a partir da memória: %w", err)
+		return fmt.Errorf("error creating RWops from memory: %w", err)
 	}
 	f, err := ttf.OpenFontRW(rwops, 1, size)
 	if err != nil {
-		return fmt.Errorf("erro ao carregar a fonte: %w", err)
+		return fmt.Errorf("error loading font: %w", err)
 	}
 	*font = f
 	return nil
@@ -54,13 +55,13 @@ func InitFont(fontTtf []byte, font **ttf.Font, size int) error {
 func LoadTexture(renderer *sdl.Renderer, imagePath string) (*sdl.Texture, error) {
 	imgSurface, err := img.Load(imagePath)
 	if err != nil {
-		return nil, fmt.Errorf("erro ao carregar imagem: %w", err)
+		return nil, fmt.Errorf("error loading image: %w", err)
 	}
 	defer imgSurface.Free()
 
 	texture, err := renderer.CreateTextureFromSurface(imgSurface)
 	if err != nil {
-		return nil, fmt.Errorf("erro ao criar textura: %w", err)
+		return nil, fmt.Errorf("error creating texture: %w", err)
 	}
 	return texture, nil
 }
@@ -69,30 +70,30 @@ func LoadTexture(renderer *sdl.Renderer, imagePath string) (*sdl.Texture, error)
 func LoadFont(rwops *sdl.RWops, size int) (*ttf.Font, error) {
 	font, err := ttf.OpenFontRW(rwops, 1, size)
 	if err != nil {
-		return nil, fmt.Errorf("erro ao carregar fonte: %w", err)
+		return nil, fmt.Errorf("error loading font: %w", err)
 	}
 	return font, nil
 }
 
-// DrawText é uma função que desenha um texto na tela com base na posição, cor e fonte fornecidos.
+// DrawText is a function that draws text on the screen based on the provided position, color, and font.
 func DrawText(renderer *sdl.Renderer, text string, position sdl.Point, color sdl.Color, font *ttf.Font) {
-	// Renderize o texto para uma superfície
+	// Render the text to a surface
 	textSurface, err := RenderText(text, color, font)
 	if err != nil {
-		fmt.Printf("Erro ao renderizar texto: %v\n", err)
+		output.Printf("Error rendering text: %v\n", err)
 		return
 	}
 	defer textSurface.Free()
 
-	// Crie uma textura a partir da superfície
+	// Create a texture from the surface
 	textTexture, err := renderer.CreateTextureFromSurface(textSurface)
 	if err != nil {
-		fmt.Printf("Erro ao criar textura: %v\n", err)
+		output.Printf("Error creating texture: %v\n", err)
 		return
 	}
 	defer textTexture.Destroy()
 
-	// Defina o retângulo de destino para a textura
+	// Set the destination rectangle for the texture
 	destinationRect := sdl.Rect{
 		X: position.X,
 		Y: position.Y,
@@ -100,7 +101,7 @@ func DrawText(renderer *sdl.Renderer, text string, position sdl.Point, color sdl
 		H: int32(textSurface.H),
 	}
 
-	// Copie a textura para o renderizador
+	// Copy the texture to the renderer
 	renderer.Copy(textTexture, nil, &destinationRect)
 }
 
@@ -108,32 +109,32 @@ func DrawText(renderer *sdl.Renderer, text string, position sdl.Point, color sdl
 func RenderText(text string, color sdl.Color, font *ttf.Font) (*sdl.Surface, error) {
 	textSurface, err := font.RenderUTF8Blended(text, color)
 	if err != nil {
-		return nil, fmt.Errorf("erro ao renderizar texto: %w", err)
+		return nil, fmt.Errorf("error rendering text: %w", err)
 	}
 	return textSurface, nil
 }
 
 func RenderTexture(renderer *sdl.Renderer, imagePath string, startQuadrant, endQuadrant string) {
-	// Carregar a imagem de textura
+	// Load the texture image
 	textureSurface, err := sdl.LoadBMP(imagePath)
 	if err != nil {
-		fmt.Printf("Erro ao carregar imagem de textura: %v\n", err)
+		output.Printf("Error loading texture image: %v\n", err)
 		return
 	}
 	defer textureSurface.Free()
 
 	textureTexture, err := renderer.CreateTextureFromSurface(textureSurface)
 	if err != nil {
-		fmt.Printf("Erro ao criar textura de textura: %v\n", err)
+		output.Printf("Error creating texture from image: %v\n", err)
 		return
 	}
 	defer textureTexture.Destroy()
 
-	// Obter a largura e altura da tela
+	// Get screen width and height
 	screenWidth, screenHeight := vars.ScreenWidth, vars.ScreenHeight
 	halfWidth, halfHeight := screenWidth/2, screenHeight/2
 
-	// Definir os retângulos para cada quadrante
+	// Define rectangles for each quadrant
 	quadrants := map[string]sdl.Rect{
 		"Q1": {X: halfWidth, Y: 0, W: halfWidth, H: halfHeight},          // Q1
 		"Q2": {X: 0, Y: 0, W: halfWidth, H: halfHeight},                  // Q2
@@ -141,16 +142,16 @@ func RenderTexture(renderer *sdl.Renderer, imagePath string, startQuadrant, endQ
 		"Q4": {X: halfWidth, Y: halfHeight, W: halfWidth, H: halfHeight}, // Q4
 	}
 
-	// Verificar se os quadrantes são válidos
+	// Check if the quadrants are valid
 	startRect, startOk := quadrants[startQuadrant]
 	endRect, endOk := quadrants[endQuadrant]
 
 	if !startOk || !endOk {
-		fmt.Printf("Quadrante(s) desconhecido(s): %s, %s\n", startQuadrant, endQuadrant)
+		output.Printf("Unknown quadrant(s): %s, %s\n", startQuadrant, endQuadrant)
 		return
 	}
 
-	// Calcular o retângulo que cobre a área entre os quadrantes
+	// Calculate the rectangle covering the area between the quadrants
 	dstRect := sdl.Rect{
 		X: min(startRect.X, endRect.X),
 		Y: min(startRect.Y, endRect.Y),
@@ -158,10 +159,10 @@ func RenderTexture(renderer *sdl.Renderer, imagePath string, startQuadrant, endQ
 		H: max(startRect.Y+startRect.H, endRect.Y+endRect.H) - min(startRect.Y, endRect.Y),
 	}
 
-	// Obter as dimensões da textura
+	// Get the dimensions of the texture
 	textureWidth, textureHeight := textureSurface.W, textureSurface.H
 
-	// Calcular o retângulo de origem da textura
+	// Calculate the source rectangle of the texture
 	srcRect := sdl.Rect{
 		X: 0,
 		Y: 0,
@@ -169,11 +170,11 @@ func RenderTexture(renderer *sdl.Renderer, imagePath string, startQuadrant, endQ
 		H: int32(textureHeight),
 	}
 
-	// Renderizar a textura ajustada para a área entre os quadrantes
+	// Render the texture adjusted to the area between the quadrants
 	renderer.Copy(textureTexture, &srcRect, &dstRect)
 }
 
-// Funções auxiliares para calcular min e max
+// Helper functions to calculate min and max
 func min(a, b int32) int32 {
 	if a < b {
 		return a
@@ -189,26 +190,26 @@ func max(a, b int32) int32 {
 }
 
 func RenderTextureAdjusted(renderer *sdl.Renderer, imagePath string, x, y, width, height int32) {
-	// Carregar a imagem de texture
+	// Load the texture image
 	textureSurface, err := sdl.LoadBMP(imagePath)
 	if err != nil {
-		fmt.Printf("Erro ao carregar imagem de texture: %v\n", err)
+		output.Printf("Error loading texture image: %v\n", err)
 		return
 	}
 	defer textureSurface.Free()
 
 	textureTexture, err := renderer.CreateTextureFromSurface(textureSurface)
 	if err != nil {
-		fmt.Printf("Erro ao criar textura de texture: %v\n", err)
+		output.Printf("Error creating texture from image: %v\n", err)
 		return
 	}
 	defer textureTexture.Destroy()
 
-	// Desenhe a textura na posição e tamanho especificados
+	// Draw the texture at the specified position and size
 	renderer.Copy(textureTexture, nil, &sdl.Rect{X: x, Y: y, W: width, H: height})
 }
 
-// WrapText divide um texto longo em várias linhas com base na largura máxima especificada.
+// WrapText splits a long text into multiple lines based on the specified maximum width.
 func WrapText(text string, font *ttf.Font, maxWidth int) []string {
 	words := strings.Fields(text)
 	var lines []string
@@ -235,7 +236,7 @@ func WrapText(text string, font *ttf.Font, maxWidth int) []string {
 	return lines
 }
 
-// textWidth calcula a largura de uma string de texto com base na fonte fornecida.
+// textWidth calculates the width of a string of text based on the provided font.
 func textWidth(font *ttf.Font, text string) int {
 	surface, err := font.RenderUTF8Blended(text, sdl.Color{R: 255, G: 255, B: 255, A: 255})
 	if err != nil {

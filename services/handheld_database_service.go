@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"handheldui/helpers"
+	"handheldui/output"
 	"io"
 	"net/http"
 	"strings"
@@ -111,7 +112,7 @@ func FetchGameDetails(platformKey, systemKey, gameKey string) (map[string]interf
 
 // FetchGameOverview fetches the overview for a given game.
 func FetchGameOverview(gameKey string) (string, error) {
-	fmt.Printf("%s/commons/overviews/%s.overview.md", baseURL, gameKey)
+	output.Printf("%s/commons/overviews/%s.overview.md", baseURL, gameKey)
 	resp, err := http.Get(fmt.Sprintf("%s/commons/overviews/%s.overview.md", baseURL, gameKey))
 	if err != nil {
 		return "", fmt.Errorf("error fetching game overview: %v", err)

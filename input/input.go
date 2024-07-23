@@ -1,6 +1,8 @@
 package input
 
 import (
+	"handheldui/output"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -31,7 +33,7 @@ func listenForKeyboardEvents() {
 		for scancode, keyCode := range keyMappings {
 			if currentKeyState[scancode] != 0 && previousKeyState[scancode] == 0 {
 				InputChannel <- InputEvent{KeyCode: keyCode}
-				PlaySound(getRespectiveSound(keyCode), 10, false)
+				output.PlaySound(getRespectiveSound(keyCode), 10, false)
 			}
 		}
 
@@ -56,7 +58,7 @@ func listenForControllerEvents() {
 		for button, keyCode := range controllerMappings {
 			if controller.Button(button) == sdl.PRESSED {
 				InputChannel <- InputEvent{KeyCode: keyCode}
-				PlaySound(getRespectiveSound(keyCode), 10, false)
+				output.PlaySound(getRespectiveSound(keyCode), 10, false)
 			}
 		}
 

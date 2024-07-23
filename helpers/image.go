@@ -3,6 +3,7 @@ package helpers
 import (
 	"bytes"
 	"fmt"
+	"handheldui/output"
 	"io"
 	"net/http"
 	"os"
@@ -15,14 +16,14 @@ func FetchGameImage(gameName string) string {
 	imagePath := fmt.Sprintf("./tmp/%s.bmp", gameName)
 
 	if _, err := os.Stat(imagePath); err == nil {
-		fmt.Printf("Imagem encontrada em disco: %s\n", imagePath)
+		output.Printf("Image found on disk: %s\n", imagePath)
 		return imagePath
 	}
 
 	imageURL := fmt.Sprintf("https://handheld-database.github.io/handheld-database/commons/images/games/%s.icon.webp", gameName)
 	response, err := http.Get(imageURL)
 	if err != nil {
-		fmt.Printf("Erro na requisição HTTP: %v\n", err)
+		output.Printf("HTTP request error: %v\n", err)
 		return ""
 	}
 	defer response.Body.Close()
@@ -30,15 +31,15 @@ func FetchGameImage(gameName string) string {
 	if response.StatusCode == http.StatusOK {
 		imageData, err := io.ReadAll(response.Body)
 		if err != nil {
-			fmt.Printf("Erro ao ler dados da imagem: %v\n", err)
+			output.Printf("Error reading image data: %v\n", err)
 			return ""
 		}
 
 		if response.Header.Get("Content-Type") == "image/webp" {
-			fmt.Println("Imagem no formato webp, convertendo para BMP...")
+			output.Printf("Image in webp format, converting to BMP...")
 			convertedImageData, err := ConvertWebpToBMP(imageData)
 			if err != nil {
-				fmt.Printf("Erro ao converter imagem webp para BMP: %v\n", err)
+				output.Printf("Error converting webp image to BMP: %v\n", err)
 				return ""
 			}
 			imageData = convertedImageData
@@ -46,32 +47,32 @@ func FetchGameImage(gameName string) string {
 
 		err = os.WriteFile(imagePath, imageData, 0644)
 		if err != nil {
-			fmt.Printf("Erro ao salvar imagem no disco: %v\n", err)
+			output.Printf("Error saving image to disk: %v\n", err)
 			return ""
 		}
 
-		fmt.Printf("Imagem salva em: %s\n", imagePath)
+		output.Printf("Image saved at: %s\n", imagePath)
 		return imagePath
 	}
 
-	fmt.Printf("Erro ao recuperar a imagem do jogo: %s, status code: %d\n", gameName, response.StatusCode)
+	output.Printf("Error retrieving game image: %s, status code: %d\n", gameName, response.StatusCode)
 	return ""
 }
 
 func ConvertWebpToBMP(webpData []byte) ([]byte, error) {
-	// Crie um buffer de bytes para armazenar a imagem BMP
+	// Create a byte buffer to store the BMP image
 	var bmpBuffer bytes.Buffer
 
-	// Decodifique os dados WebP
+	// Decode the WebP data
 	img, err := webp.Decode(bytes.NewReader(webpData))
 	if err != nil {
-		return nil, fmt.Errorf("falha ao decodificar imagem WebP: %v", err)
+		return nil, fmt.Errorf("failed to decode WebP image: %v", err)
 	}
 
-	// Escreva a imagem no buffer como BMP
+	// Write the image to the buffer as BMP
 	err = bmp.Encode(&bmpBuffer, img)
 	if err != nil {
-		return nil, fmt.Errorf("falha ao codificar imagem BMP: %v", err)
+		return nil, fmt.Errorf("failed to encode BMP image: %v", err)
 	}
 
 	return bmpBuffer.Bytes(), nil

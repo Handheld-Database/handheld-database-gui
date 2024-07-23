@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"handheldui/helpers"
 	"handheldui/input"
+	"handheldui/output"
 	"handheldui/screens"
 	"handheldui/vars"
 
@@ -55,13 +56,13 @@ func main() {
 		panic(err)
 	}
 
-	window, err := sdl.CreateWindow("Lista de Consoles", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, vars.ScreenWidth, vars.ScreenHeight, sdl.WINDOW_SHOWN)
+	window, err := sdl.CreateWindow("Systems List", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, vars.ScreenWidth, vars.ScreenHeight, sdl.WINDOW_SHOWN)
 	if err != nil {
 		panic(err)
 	}
 	defer window.Destroy()
 
-	input.PlaySound("assets/sounds/Retro_Mystic.ogg", 5, true)
+	output.PlaySound("assets/sounds/Retro_Mystic.ogg", 5, true)
 
 	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
 	if err != nil {
@@ -117,7 +118,7 @@ func main() {
 				handler(inputEvent)
 			}
 		default:
-			// Nenhum evento de entrada recebido
+			// Not event received
 		}
 
 		if drawFunc, ok := screensMap[vars.CurrentScreen]; ok {

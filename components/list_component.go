@@ -1,8 +1,8 @@
 package components
 
 import (
-	"fmt"
 	"handheldui/helpers"
+	"handheldui/output"
 	"handheldui/vars"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -53,7 +53,7 @@ func (l *ListComponent) ScrollUp() {
 }
 
 func (l *ListComponent) Draw(primaryColor sdl.Color, selectedColor sdl.Color) {
-	// Desenhe os itens
+	// Draw the items
 	startIndex := l.scrollOffset
 	endIndex := startIndex + l.maxVisibleItems
 	if endIndex > len(l.items) {
@@ -69,14 +69,14 @@ func (l *ListComponent) Draw(primaryColor sdl.Color, selectedColor sdl.Color) {
 		itemText := l.itemFormatter(index+startIndex, item)
 		textSurface, err := helpers.RenderText(itemText, color, vars.BodyFont)
 		if err != nil {
-			fmt.Printf("Erro ao renderizar texto: %v\n", err)
+			output.Printf("Error rendering text: %v\n", err)
 			return
 		}
 		defer textSurface.Free()
 
 		texture, err := l.renderer.CreateTextureFromSurface(textSurface)
 		if err != nil {
-			fmt.Printf("Erro ao criar textura: %v\n", err)
+			output.Printf("Error creating texture: %v\n", err)
 			return
 		}
 		defer texture.Destroy()
