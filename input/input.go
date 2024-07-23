@@ -53,16 +53,21 @@ func listenForControllerEvents() {
 		sdl.CONTROLLER_BUTTON_B:         "A",
 	}
 
+	// State tracking for debounce
+	previousButtonState := make(map[sdl.GameControllerButton]bool)
+
 	for {
 		sdl.PumpEvents()
 		for button, keyCode := range controllerMappings {
-			if controller.Button(button) == sdl.PRESSED {
+			currentState := controller.Button(button) == sdl.PRESSED
+			if currentState && !previousButtonState[button] {
 				InputChannel <- InputEvent{KeyCode: keyCode}
 				output.PlaySound(getRespectiveSound(keyCode), 10, false)
 			}
+			previousButtonState[button] = currentState
 		}
 
-		sdl.Delay(150)
+		sdl.Delay(50)
 	}
 }
 
