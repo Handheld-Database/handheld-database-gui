@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime/debug"
 
-	"handheldui/helpers"
+	"handheldui/helpers/sdlutils"
 	"handheldui/input"
 	"handheldui/output"
 	"handheldui/screens"
@@ -38,35 +38,35 @@ func main() {
 
 	vars.InitVars()
 
-	vars.ScreenWidth = int32(640)
-	vars.ScreenHeight = int32(480)
+	vars.ScreenWidth = int32(1280)
+	vars.ScreenHeight = int32(720)
 
-	if err := helpers.InitSDL(); err != nil {
+	if err := sdlutils.InitSDL(); err != nil {
 		panic(err)
 	}
 
-	if err := helpers.InitMixer(); err != nil {
+	if err := sdlutils.InitMixer(); err != nil {
 		panic(err)
 	}
 	defer mix.CloseAudio()
 
-	if err := helpers.InitTTF(); err != nil {
+	if err := sdlutils.InitTTF(); err != nil {
 		panic(err)
 	}
 
-	if err := helpers.InitFont(kenneyPixelSquare, &vars.BodyFont, 24); err != nil {
+	if err := sdlutils.InitFont(kenneyPixelSquare, &vars.BodyFont, 24); err != nil {
 		panic(err)
 	}
 
-	if err := helpers.InitFont(kenneyPixelSquare, &vars.BodyBigFont, 58); err != nil {
+	if err := sdlutils.InitFont(kenneyPixelSquare, &vars.BodyBigFont, 58); err != nil {
 		panic(err)
 	}
 
-	if err := helpers.InitFont(NotoSans, &vars.LongTextFont, 24); err != nil {
+	if err := sdlutils.InitFont(NotoSans, &vars.LongTextFont, 24); err != nil {
 		panic(err)
 	}
 
-	if err := helpers.InitFont(KenneySpace, &vars.HeaderFont, 28); err != nil {
+	if err := sdlutils.InitFont(KenneySpace, &vars.HeaderFont, 28); err != nil {
 		panic(err)
 	}
 

@@ -1,7 +1,7 @@
 package components
 
 import (
-	"handheldui/helpers"
+	"handheldui/helpers/sdlutils"
 	"handheldui/output"
 	"strings"
 
@@ -85,7 +85,7 @@ func (t *TextComponent) Draw(primaryColor sdl.Color) {
 	visibleLines := t.lines[startIndex:endIndex]
 
 	for index, line := range visibleLines {
-		textSurface, err := helpers.RenderText(line, primaryColor, t.font)
+		textSurface, err := sdlutils.RenderText(line, primaryColor, t.font)
 		if err != nil {
 			output.Printf("Error rendering text: %v\n", err)
 			return

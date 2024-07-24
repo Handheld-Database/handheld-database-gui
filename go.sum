@@ -1,3 +1,5 @@
+github.com/napsy/go-css v0.0.0-20230611142900-9dd118f3874c h1:La4rUnvsKPtQ468QEIAprCeAFdIRigErRuws3EhOkNw=
+github.com/napsy/go-css v0.0.0-20230611142900-9dd118f3874c/go.mod h1:HqZYcKcNnv50fgOTdGUn9YbJa2qC9oJ3kLnyrwwVzUI=
 github.com/veandco/go-sdl2 v0.4.40 h1:fZv6wC3zz1Xt167P09gazawnpa0KY5LM7JAvKpX9d/U=
 github.com/veandco/go-sdl2 v0.4.40/go.mod h1:OROqMhHD43nT4/i9crJukyVecjPNYYuCofep6SNiAjY=
 golang.org/x/image v0.18.0 h1:jGzIakQa/ZXI1I0Fxvaa9W7yP25TqT6cHIHn+6CqvSQ=

@@ -3,7 +3,9 @@ package screens
 import (
 	"fmt"
 	"handheldui/components"
-	"handheldui/helpers"
+	"handheldui/helpers/geometry"
+	"handheldui/helpers/image"
+	"handheldui/helpers/sdlutils"
 	"handheldui/input"
 	"handheldui/output"
 	"handheldui/services"
@@ -75,7 +77,7 @@ func (g *GamesScreen) LoadGameImage() {
 	selectedIndex := g.listComponent.GetSelectedIndex()
 	if selectedIndex < len(g.games) {
 		gameName := g.games[selectedIndex]["key"].(string)
-		imagePath := helpers.FetchGameImage(gameName)
+		imagePath := image.FetchGameImage(gameName)
 		if imagePath != "" {
 			g.textureMutex.Lock()
 			g.currentImage = imagePath
@@ -97,20 +99,20 @@ func (g *GamesScreen) Draw() {
 	g.renderer.SetDrawColor(255, 255, 255, 255)
 	g.renderer.Clear()
 
-	helpers.RenderTexture(g.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+	sdlutils.RenderTexture(g.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
-	helpers.DrawText(g.renderer, "Games List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	sdlutils.DrawText(g.renderer, "Games List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
 
 	g.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
 
 	g.textureMutex.Lock()
 	defer g.textureMutex.Unlock()
 
-	element := helpers.NewElement(345, 345, 0, 78, "top-right")
+	element := geometry.NewElement(345, 345, 0, 78, "top-right")
 	if g.currentImage != "" {
-		helpers.RenderTextureAdjusted(g.renderer, g.currentImage, element.GetPosition())
+		sdlutils.RenderTextureAdjusted(g.renderer, g.currentImage, element.GetPosition())
 	} else {
-		helpers.RenderTextureAdjusted(g.renderer, "assets/textures/not_found.bmp", element.GetPosition())
+		sdlutils.RenderTextureAdjusted(g.renderer, "assets/textures/not_found.bmp", element.GetPosition())
 		output.Printf("No texture available to draw.")
 	}
 
@@ -124,13 +126,13 @@ func (g *GamesScreen) Draw() {
 	selectedIndex := g.listComponent.GetSelectedIndex()
 	gameRank := g.games[selectedIndex]["rank"].(string)
 
-	helpers.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720.bmp", "Q1", "Q4")
-	helpers.RenderTexture(g.renderer, rankAssets[gameRank], "Q1", "Q1")
-	helpers.RenderTexture(g.renderer, "assets/textures/ui_game_display_details_1280_720.bmp", "Q4", "Q4")
-	helpers.RenderTexture(g.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
+	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720.bmp", "Q1", "Q4")
+	sdlutils.RenderTexture(g.renderer, rankAssets[gameRank], "Q1", "Q1")
+	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_details_1280_720.bmp", "Q4", "Q4")
+	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 
 	var postitionRank = sdl.Point{X: vars.ScreenWidth - 420, Y: vars.ScreenHeight - 270}
-	helpers.DrawText(g.renderer, gameRank, postitionRank, vars.Colors.BLACK, vars.BodyBigFont)
+	sdlutils.DrawText(g.renderer, gameRank, postitionRank, vars.Colors.BLACK, vars.BodyBigFont)
 
 	g.renderer.Present()
 }

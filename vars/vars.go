@@ -1,6 +1,8 @@
 package vars
 
 import (
+	"handheldui/helpers/json"
+
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
@@ -26,6 +28,7 @@ var (
 	LongTextFont    *ttf.Font
 	Colors          FontColors
 	ControlType     string
+	Styles          json.JSONDict
 )
 
 func InitVars() {

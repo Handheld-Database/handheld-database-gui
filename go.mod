@@ -7,6 +7,4 @@ require (
 	golang.org/x/image v0.18.0
 )
 
-require (
-	golang.org/x/net v0.12.0 // indirect
-)
+require golang.org/x/net v0.12.0 // indirect

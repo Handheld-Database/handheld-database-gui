@@ -2,7 +2,8 @@ package screens
 
 import (
 	"handheldui/components"
-	"handheldui/helpers"
+	"handheldui/helpers/markdown"
+	"handheldui/helpers/sdlutils"
 	"handheldui/input"
 	"handheldui/services"
 	"handheldui/vars"
@@ -36,10 +37,13 @@ func (o *OverviewScreen) InitOverview() {
 
 	review, err := services.FetchGameMarkdown(vars.CurrentPlatform, vars.CurrentSystem, vars.CurrentGame)
 	if err != nil {
-		overview = "Oops, game description not found!"
+		review = "Oops, game description not found!"
 	}
 
-	o.textContent = helpers.MarkdownToPlaintext(strings.ReplaceAll(review, "%game_overview%", overview))
+	plainReview := markdown.MarkdownToPlaintext(review)
+	plainOverview := markdown.MarkdownToPlaintext(overview)
+
+	o.textContent = strings.ReplaceAll(plainReview, "%game_overview%", plainOverview)
 	o.textComponent = components.NewTextComponent(o.renderer, o.textContent, vars.LongTextFont, 18, 1200)
 
 	o.initialized = true
@@ -64,17 +68,17 @@ func (o *OverviewScreen) Draw() {
 	o.renderer.SetDrawColor(0, 0, 0, 255) // Background color
 	o.renderer.Clear()
 
-	helpers.RenderTexture(o.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+	sdlutils.RenderTexture(o.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
-	helpers.RenderTexture(o.renderer, "assets/textures/bg_overlay.bmp", "Q2", "Q4")
+	sdlutils.RenderTexture(o.renderer, "assets/textures/bg_overlay.bmp", "Q2", "Q4")
 
 	// Draw the title
-	helpers.DrawText(o.renderer, "Overview", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	sdlutils.DrawText(o.renderer, "Overview", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
 
 	// Draw the text component with scrolling
 	o.textComponent.Draw(vars.Colors.WHITE)
 
-	helpers.RenderTexture(o.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
+	sdlutils.RenderTexture(o.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 
 	o.renderer.Present()
 }

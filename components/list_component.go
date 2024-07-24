@@ -1,7 +1,7 @@
 package components
 
 import (
-	"handheldui/helpers"
+	"handheldui/helpers/sdlutils"
 	"handheldui/output"
 	"handheldui/vars"
 
@@ -67,7 +67,7 @@ func (l *ListComponent) Draw(primaryColor sdl.Color, selectedColor sdl.Color) {
 			color = selectedColor
 		}
 		itemText := l.itemFormatter(index+startIndex, item)
-		textSurface, err := helpers.RenderText(itemText, color, vars.BodyFont)
+		textSurface, err := sdlutils.RenderText(itemText, color, vars.BodyFont)
 		if err != nil {
 			output.Printf("Error rendering text: %v\n", err)
 			return

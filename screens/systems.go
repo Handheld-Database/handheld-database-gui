@@ -3,7 +3,7 @@ package screens
 import (
 	"fmt"
 	"handheldui/components"
-	"handheldui/helpers"
+	"handheldui/helpers/sdlutils"
 	"handheldui/input"
 	"handheldui/output"
 	"handheldui/services"
@@ -77,15 +77,15 @@ func (s *SystemsScreen) Draw() {
 	s.renderer.SetDrawColor(255, 255, 255, 255)
 	s.renderer.Clear()
 
-	helpers.RenderTexture(s.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+	sdlutils.RenderTexture(s.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Draw the current title
-	helpers.DrawText(s.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	sdlutils.DrawText(s.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
 
 	// Draw the list component
 	s.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
 
-	helpers.RenderTexture(s.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
+	sdlutils.RenderTexture(s.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 
 	s.renderer.Present()
 }
