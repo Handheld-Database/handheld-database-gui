@@ -38,8 +38,8 @@ func main() {
 
 	vars.InitVars()
 
-	vars.ScreenWidth = int32(1280)
-	vars.ScreenHeight = int32(720)
+	vars.ScreenWidth = int32(640)
+	vars.ScreenHeight = int32(480)
 
 	if err := helpers.InitSDL(); err != nil {
 		panic(err)

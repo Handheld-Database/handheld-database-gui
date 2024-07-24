@@ -189,7 +189,7 @@ func max(a, b int32) int32 {
 	return b
 }
 
-func RenderTextureAdjusted(renderer *sdl.Renderer, imagePath string, x, y, width, height int32) {
+func RenderTextureAdjusted(renderer *sdl.Renderer, imagePath string, rect sdl.Rect) {
 	// Load the texture image
 	textureSurface, err := sdl.LoadBMP(imagePath)
 	if err != nil {
@@ -206,7 +206,7 @@ func RenderTextureAdjusted(renderer *sdl.Renderer, imagePath string, x, y, width
 	defer textureTexture.Destroy()
 
 	// Draw the texture at the specified position and size
-	renderer.Copy(textureTexture, nil, &sdl.Rect{X: x, Y: y, W: width, H: height})
+	renderer.Copy(textureTexture, nil, &rect)
 }
 
 // WrapText splits a long text into multiple lines based on the specified maximum width.

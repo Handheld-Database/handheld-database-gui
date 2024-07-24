@@ -105,10 +105,12 @@ func (g *GamesScreen) Draw() {
 
 	g.textureMutex.Lock()
 	defer g.textureMutex.Unlock()
+
+	element := helpers.NewElement(345, 345, 0, 78, "top-right")
 	if g.currentImage != "" {
-		helpers.RenderTextureAdjusted(g.renderer, g.currentImage, vars.ScreenWidth-340-84, 78, 340, 340)
+		helpers.RenderTextureAdjusted(g.renderer, g.currentImage, element.GetPosition())
 	} else {
-		helpers.RenderTextureAdjusted(g.renderer, "assets/textures/not_found.bmp", vars.ScreenWidth-340-84, 78, 340, 340)
+		helpers.RenderTextureAdjusted(g.renderer, "assets/textures/not_found.bmp", element.GetPosition())
 		output.Printf("No texture available to draw.")
 	}
 
