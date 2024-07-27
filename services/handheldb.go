@@ -89,6 +89,29 @@ func FetchGames(platformKey, systemKey string) ([]map[string]interface{}, error)
 	return result.Games, nil
 }
 
+// FetchTesters fetches testers for a given platform and system.
+func FetchTesters(platformKey, systemKey, gameKey string) ([]string, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/platforms/%s/systems/%s/%s/%s.json", baseURL, platformKey, systemKey, gameKey, gameKey))
+	if err != nil {
+		return nil, fmt.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, resp.Status)
+	}
+
+	var result struct {
+		Testers []string `json:"testers"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("error decoding response: %v", err)
+	}
+
+	return result.Testers, nil
+}
+
 // FetchGameDetails fetches details for a given game.
 func FetchGameDetails(platformKey, systemKey, gameKey string) (map[string]interface{}, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/platforms/%s/systems/%s/%s/%s.json", baseURL, platformKey, systemKey, gameKey, gameKey))
@@ -105,7 +128,6 @@ func FetchGameDetails(platformKey, systemKey, gameKey string) (map[string]interf
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, fmt.Errorf("error decoding response: %v", err)
 	}
-
 	return result, nil
 }
 
@@ -131,8 +153,8 @@ func FetchGameOverview(gameKey string) (string, error) {
 }
 
 // FetchGameMarkdown fetches the markdown content for a given game.
-func FetchGameMarkdown(platformKey, systemKey, gameKey string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/platforms/%s/systems/%s/%s/%s.md", baseURL, platformKey, systemKey, gameKey, gameKey))
+func FetchGameMarkdown(platformKey, systemKey, gameKey, tester string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/platforms/%s/systems/%s/%s/%s.%s.md", baseURL, platformKey, systemKey, gameKey, gameKey, tester))
 	if err != nil {
 		return "", fmt.Errorf("error fetching game markdown from %s/%s/%s: %v", platformKey, systemKey, gameKey, err)
 	}

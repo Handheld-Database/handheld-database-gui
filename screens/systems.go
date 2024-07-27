@@ -21,7 +21,7 @@ type SystemsScreen struct {
 }
 
 func NewSystemsScreen(renderer *sdl.Renderer) (*SystemsScreen, error) {
-	listComponent := components.NewListComponent(renderer, "Systems List", 20, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 19, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 

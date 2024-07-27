@@ -35,7 +35,7 @@ func (o *OverviewScreen) InitOverview() {
 		overview = "Help us to find an overview!"
 	}
 
-	review, err := services.FetchGameMarkdown(vars.CurrentPlatform, vars.CurrentSystem, vars.CurrentGame)
+	review, err := services.FetchGameMarkdown(vars.CurrentPlatform, vars.CurrentSystem, vars.CurrentGame, vars.CurrentTester)
 	if err != nil {
 		review = "Oops, game description not found!"
 	}
@@ -56,8 +56,8 @@ func (o *OverviewScreen) HandleInput(event input.InputEvent) {
 	case "UP":
 		o.textComponent.ScrollUp()
 	case "B":
-		vars.CurrentGame = ""
-		vars.CurrentScreen = "games_screen"
+		vars.CurrentTester = ""
+		vars.CurrentScreen = "reviews_screen"
 		o.initialized = false
 	}
 }

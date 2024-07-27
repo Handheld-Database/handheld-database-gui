@@ -88,10 +88,17 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	gamesScreen, err := screens.NewGamesScreen(renderer)
 	if err != nil {
 		panic(err)
 	}
+
+	reviewsScreen, err := screens.NewReviewsScreen(renderer)
+	if err != nil {
+		panic(err)
+	}
+
 	overviewScreen, err := screens.NewOverviewScreen(renderer)
 	if err != nil {
 		panic(err)
@@ -101,12 +108,14 @@ func main() {
 		"systems_screen":  systemsScreen.Draw,
 		"games_screen":    gamesScreen.Draw,
 		"overview_screen": overviewScreen.Draw,
+		"reviews_screen":  reviewsScreen.Draw,
 	}
 
 	inputHandlers := map[string]func(input.InputEvent){
 		"systems_screen":  systemsScreen.HandleInput,
 		"games_screen":    gamesScreen.HandleInput,
 		"overview_screen": overviewScreen.HandleInput,
+		"reviews_screen":  reviewsScreen.HandleInput,
 	}
 
 	input.StartListening()

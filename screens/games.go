@@ -25,7 +25,7 @@ type GamesScreen struct {
 }
 
 func NewGamesScreen(renderer *sdl.Renderer) (*GamesScreen, error) {
-	listComponent := components.NewListComponent(renderer, "Games List", 19, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 19, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 
@@ -69,7 +69,7 @@ func (g *GamesScreen) HandleInput(event input.InputEvent) {
 	case "A":
 		selectedGame := g.games[g.listComponent.GetSelectedIndex()]
 		vars.CurrentGame = selectedGame["key"].(string)
-		vars.CurrentScreen = "overview_screen"
+		vars.CurrentScreen = "reviews_screen"
 	}
 }
 

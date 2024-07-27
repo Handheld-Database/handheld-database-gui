@@ -13,15 +13,13 @@ type ListComponent struct {
 	items           []map[string]interface{}
 	selectedIndex   int
 	scrollOffset    int
-	title           string
 	itemFormatter   func(index int, item map[string]interface{}) string
 	maxVisibleItems int
 }
 
-func NewListComponent(renderer *sdl.Renderer, title string, maxVisibleItems int, itemFormatter func(index int, item map[string]interface{}) string) *ListComponent {
+func NewListComponent(renderer *sdl.Renderer, maxVisibleItems int, itemFormatter func(index int, item map[string]interface{}) string) *ListComponent {
 	return &ListComponent{
 		renderer:        renderer,
-		title:           title,
 		itemFormatter:   itemFormatter,
 		maxVisibleItems: maxVisibleItems,
 		items:           []map[string]interface{}{},
