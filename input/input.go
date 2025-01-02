@@ -21,10 +21,12 @@ func listenForKeyboardEvents() {
 	previousKeyState := make([]uint8, sdl.NUM_SCANCODES)
 
 	keyMappings := map[sdl.Scancode]string{
-		sdl.SCANCODE_DOWN: "DOWN",
-		sdl.SCANCODE_UP:   "UP",
-		sdl.SCANCODE_A:    "A",
-		sdl.SCANCODE_B:    "B",
+		sdl.SCANCODE_DOWN:     "DOWN",
+		sdl.SCANCODE_UP:       "UP",
+		sdl.SCANCODE_A:        "A",
+		sdl.SCANCODE_B:        "B",
+		sdl.SCANCODE_PAGEDOWN: "R1",
+		sdl.SCANCODE_PAGEUP:   "L1",
 	}
 
 	for {
@@ -47,10 +49,12 @@ func listenForControllerEvents() {
 	defer controller.Close()
 
 	controllerMappings := map[sdl.GameControllerButton]string{
-		sdl.CONTROLLER_BUTTON_DPAD_DOWN: "DOWN",
-		sdl.CONTROLLER_BUTTON_DPAD_UP:   "UP",
-		sdl.CONTROLLER_BUTTON_A:         "B",
-		sdl.CONTROLLER_BUTTON_B:         "A",
+		sdl.CONTROLLER_BUTTON_DPAD_DOWN:     "DOWN",
+		sdl.CONTROLLER_BUTTON_DPAD_UP:       "UP",
+		sdl.CONTROLLER_BUTTON_A:             "B",
+		sdl.CONTROLLER_BUTTON_B:             "A",
+		sdl.CONTROLLER_BUTTON_LEFTSHOULDER:  "L1",
+		sdl.CONTROLLER_BUTTON_RIGHTSHOULDER: "R1",
 	}
 
 	// State tracking for debounce

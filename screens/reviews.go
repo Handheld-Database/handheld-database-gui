@@ -39,7 +39,7 @@ func (r *ReviewsScreen) InitReviews() {
 
 	testers, err := services.FetchTesters(vars.CurrentPlatform, vars.CurrentSystem, vars.CurrentGame)
 	if err != nil {
-		output.Printf("Error fetching games: %v\n", err)
+		output.Errorf("Error fetching games: %v\n", err)
 		return
 	}
 
@@ -62,6 +62,10 @@ func (r *ReviewsScreen) HandleInput(event input.InputEvent) {
 		r.listComponent.ScrollDown()
 	case "UP":
 		r.listComponent.ScrollUp()
+	case "L1":
+		r.listComponent.PageUp()
+	case "R1":
+		r.listComponent.PageDown()
 	case "A":
 		r.showReview()
 	case "B":

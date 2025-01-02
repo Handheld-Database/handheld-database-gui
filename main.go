@@ -25,6 +25,9 @@ var KenneySpace []byte
 //go:embed assets/fonts/NotoSans_Condensed-SemiBold.ttf
 var NotoSans []byte
 
+//go:embed configs/config.json
+var ConfigFile []byte
+
 func main() {
 	// Defer a function to handle panics and exit with -1
 	defer func() {
@@ -37,6 +40,13 @@ func main() {
 	}()
 
 	vars.InitVars()
+
+	var err error
+
+	vars.Config, err = vars.LoadConfig(ConfigFile)
+	if err != nil {
+		panic(err)
+	}
 
 	vars.ScreenWidth = int32(1280)
 	vars.ScreenHeight = int32(720)
@@ -54,7 +64,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := sdlutils.InitFont(kenneyPixelSquare, &vars.BodyFont, 24); err != nil {
+	if err := sdlutils.InitFont(NotoSans, &vars.BodyFont, 24); err != nil {
 		panic(err)
 	}
 
@@ -84,6 +94,21 @@ func main() {
 	}
 	defer renderer.Destroy()
 
+	homeScreen, err := screens.NewHomeScreen(renderer)
+	if err != nil {
+		panic(err)
+	}
+
+	repositoriesScreen, err := screens.NewRepositoriesScreen(renderer)
+	if err != nil {
+		panic(err)
+	}
+
+	filesScreen, err := screens.NewFilesScreen(renderer)
+	if err != nil {
+		panic(err)
+	}
+
 	systemsScreen, err := screens.NewSystemsScreen(renderer)
 	if err != nil {
 		panic(err)
@@ -105,17 +130,23 @@ func main() {
 	}
 
 	screensMap := map[string]func(){
-		"systems_screen":  systemsScreen.Draw,
-		"games_screen":    gamesScreen.Draw,
-		"overview_screen": overviewScreen.Draw,
-		"reviews_screen":  reviewsScreen.Draw,
+		"home_screen":         homeScreen.Draw,
+		"repositories_screen": repositoriesScreen.Draw,
+		"files_screen":        filesScreen.Draw,
+		"systems_screen":      systemsScreen.Draw,
+		"games_screen":        gamesScreen.Draw,
+		"overview_screen":     overviewScreen.Draw,
+		"reviews_screen":      reviewsScreen.Draw,
 	}
 
 	inputHandlers := map[string]func(input.InputEvent){
-		"systems_screen":  systemsScreen.HandleInput,
-		"games_screen":    gamesScreen.HandleInput,
-		"overview_screen": overviewScreen.HandleInput,
-		"reviews_screen":  reviewsScreen.HandleInput,
+		"home_screen":         homeScreen.HandleInput,
+		"repositories_screen": repositoriesScreen.HandleInput,
+		"files_screen":        filesScreen.HandleInput,
+		"systems_screen":      systemsScreen.HandleInput,
+		"games_screen":        gamesScreen.HandleInput,
+		"overview_screen":     overviewScreen.HandleInput,
+		"reviews_screen":      reviewsScreen.HandleInput,
 	}
 
 	input.StartListening()

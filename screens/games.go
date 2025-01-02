@@ -44,7 +44,7 @@ func (g *GamesScreen) InitGames() {
 
 	games, err := services.FetchGames(vars.CurrentPlatform, vars.CurrentSystem)
 	if err != nil {
-		output.Printf("Error fetching games: %v\n", err)
+		output.Errorf("Error fetching games: %v\n", err)
 		return
 	}
 	g.games = games
@@ -62,6 +62,10 @@ func (g *GamesScreen) HandleInput(event input.InputEvent) {
 		g.listComponent.ScrollDown()
 	case "UP":
 		g.listComponent.ScrollUp()
+	case "L1":
+		g.listComponent.PageUp()
+	case "R1":
+		g.listComponent.PageDown()
 	case "B":
 		g.initialized = false
 		g.listComponent.SetItems([]map[string]interface{}{})
@@ -78,6 +82,7 @@ func (g *GamesScreen) LoadGameImage() {
 	if selectedIndex < len(g.games) {
 		gameName := g.games[selectedIndex]["key"].(string)
 		imagePath := image.FetchGameImage(gameName)
+
 		if imagePath != "" {
 			g.textureMutex.Lock()
 			g.currentImage = imagePath
@@ -109,6 +114,7 @@ func (g *GamesScreen) Draw() {
 	defer g.textureMutex.Unlock()
 
 	element := geometry.NewElement(345, 345, 0, 78, "top-right")
+
 	if g.currentImage != "" {
 		sdlutils.RenderTextureAdjusted(g.renderer, g.currentImage, element.GetPosition())
 	} else {

@@ -20,6 +20,7 @@ var (
 	CurrentScreen   string
 	CurrentSystem   string
 	CurrentGame     string
+	CurrentRepo     string
 	CurrentTester   string
 	BodyFont        *ttf.Font
 	HeaderFont      *ttf.Font
@@ -27,16 +28,19 @@ var (
 	LongTextFont    *ttf.Font
 	Colors          FontColors
 	ControlType     string
+	Config          *ConfigDefinition
 )
 
 func InitVars() {
-	Debug = false
+	Config = nil
+	Debug = true
 	ScreenWidth = 0
 	ScreenHeight = 0
 	CurrentPlatform = "tsp"
-	CurrentScreen = "systems_screen"
+	CurrentScreen = "home_screen"
 	CurrentSystem = ""
 	CurrentGame = ""
+	CurrentRepo = ""
 	ControlType = "keyboard"
 	BodyFont = nil
 	HeaderFont = nil
