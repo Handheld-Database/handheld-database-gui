@@ -20,7 +20,7 @@ type ReviewsScreen struct {
 }
 
 func NewReviewsScreen(renderer *sdl.Renderer) (*ReviewsScreen, error) {
-	listComponent := components.NewListComponent(renderer, 19, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 15, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 

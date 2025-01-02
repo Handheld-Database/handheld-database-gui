@@ -84,7 +84,7 @@ func main() {
 		panic(err)
 	}
 
-	window, err := sdl.CreateWindow("Systems List", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, vars.ScreenWidth, vars.ScreenHeight, sdl.WINDOW_SHOWN)
+	window, err := sdl.CreateWindow("HandhelDB", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, vars.ScreenWidth, vars.ScreenHeight, sdl.WINDOW_SHOWN)
 	if err != nil {
 		panic(err)
 	}

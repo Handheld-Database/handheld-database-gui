@@ -33,7 +33,7 @@ var (
 
 func InitVars() {
 	Config = nil
-	Debug = true
+	Debug = false
 	ScreenWidth = 0
 	ScreenHeight = 0
 	CurrentPlatform = "tsp"

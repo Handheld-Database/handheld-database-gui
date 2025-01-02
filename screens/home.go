@@ -17,7 +17,7 @@ type HomeScreen struct {
 }
 
 func NewHomeScreen(renderer *sdl.Renderer) (*HomeScreen, error) {
-	listComponent := components.NewListComponent(renderer, 19, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 15, func(index int, item map[string]interface{}) string {
 		return item["label"].(string)
 	})
 

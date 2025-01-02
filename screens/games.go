@@ -25,7 +25,7 @@ type GamesScreen struct {
 }
 
 func NewGamesScreen(renderer *sdl.Renderer) (*GamesScreen, error) {
-	listComponent := components.NewListComponent(renderer, 19, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 15, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 
@@ -113,7 +113,9 @@ func (g *GamesScreen) Draw() {
 	g.textureMutex.Lock()
 	defer g.textureMutex.Unlock()
 
-	element := geometry.NewElement(345, 345, 0, 78, "top-right")
+	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720.bmp", "Q1", "Q4")
+
+	element := geometry.NewElement(280, 280, 0, 78, "top-right")
 
 	if g.currentImage != "" {
 		sdlutils.RenderTextureAdjusted(g.renderer, g.currentImage, element.GetPosition())
@@ -132,13 +134,9 @@ func (g *GamesScreen) Draw() {
 	selectedIndex := g.listComponent.GetSelectedIndex()
 	gameRank := g.games[selectedIndex]["rank"].(string)
 
-	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720.bmp", "Q1", "Q4")
-	sdlutils.RenderTexture(g.renderer, rankAssets[gameRank], "Q1", "Q1")
-	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_details_1280_720.bmp", "Q4", "Q4")
+	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720_overlay.bmp", "Q1", "Q4")
+	sdlutils.RenderTexture(g.renderer, rankAssets[gameRank], "Q1", "Q4")
 	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
-
-	var postitionRank = sdl.Point{X: vars.ScreenWidth - 420, Y: vars.ScreenHeight - 270}
-	sdlutils.DrawText(g.renderer, gameRank, postitionRank, vars.Colors.BLACK, vars.BodyBigFont)
 
 	g.renderer.Present()
 }

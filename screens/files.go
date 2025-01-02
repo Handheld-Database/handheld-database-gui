@@ -25,7 +25,7 @@ type FilesScreen struct {
 }
 
 func NewFilesScreen(renderer *sdl.Renderer) (*FilesScreen, error) {
-	listComponent := components.NewListComponent(renderer, 19, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 15, func(index int, item map[string]interface{}) string {
 		return item["name"].(string)
 	})
 
@@ -115,7 +115,7 @@ func (f *FilesScreen) HandleInput(event input.InputEvent) {
 			f.cancelDownload = nil
 		} else {
 			f.initialized = false
-			vars.CurrentScreen = "home_screen"
+			vars.CurrentScreen = "repositories_screen"
 		}
 	}
 }

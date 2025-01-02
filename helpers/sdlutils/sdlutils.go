@@ -3,6 +3,7 @@ package sdlutils
 import (
 	"handheldui/output"
 	"handheldui/vars"
+	"log"
 	"strings"
 
 	"github.com/veandco/go-sdl2/img"
@@ -204,4 +205,39 @@ func textWidth(font *ttf.Font, text string) int {
 	defer surface.Free()
 
 	return int(surface.W)
+}
+
+func RenderScaledTexture(renderer *sdl.Renderer, imgPath string, x, y int32, scale float64) {
+	// Carregar a textura
+	texture, err := LoadTexture(renderer, imgPath)
+	if err != nil {
+		log.Printf("Erro ao carregar textura: %s, %v", imgPath, err)
+		return
+	}
+	defer texture.Destroy()
+
+	// Obter dimensões originais da textura
+	_, _, width, height, err := texture.Query()
+	if err != nil {
+		log.Printf("Erro ao consultar textura: %v", err)
+		return
+	}
+
+	// Ajustar dimensões pela escala
+	scaledWidth := int32(float64(width) * scale)
+	scaledHeight := int32(float64(height) * scale)
+
+	// Calcular o retângulo de destino (centralizando)
+	dstRect := sdl.Rect{
+		X: x - scaledWidth/2,
+		Y: y - scaledHeight/2,
+		W: scaledWidth,
+		H: scaledHeight,
+	}
+
+	// Renderizar a textura na escala ajustada
+	err = renderer.Copy(texture, nil, &dstRect)
+	if err != nil {
+		log.Printf("Erro ao renderizar textura: %v", err)
+	}
 }
