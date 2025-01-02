@@ -25,9 +25,6 @@ var KenneySpace []byte
 //go:embed assets/fonts/NotoSans_Condensed-SemiBold.ttf
 var NotoSans []byte
 
-//go:embed configs/config.json
-var ConfigFile []byte
-
 func main() {
 	// Defer a function to handle panics and exit with -1
 	defer func() {
@@ -43,7 +40,14 @@ func main() {
 
 	var err error
 
-	vars.Config, err = vars.LoadConfig(ConfigFile)
+	configFilePath := "configs/config.json"
+	configFile, err := os.ReadFile(configFilePath)
+	if err != nil {
+		log.Fatalf("Error reading config file: %v\n", err)
+	}
+
+	vars.Config, err = vars.LoadConfig(configFile)
+
 	if err != nil {
 		panic(err)
 	}
