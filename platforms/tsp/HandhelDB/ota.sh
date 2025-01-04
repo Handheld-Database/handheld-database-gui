@@ -1,75 +1,83 @@
 #!/bin/bash
 
-# Nome do repositório no formato "owner/repo"
+# Repository name in the format "owner/repo"
 REPO="Handheld-Database/handheld-database-gui"
 
-# Arquivo de versão local
+# Local version file
 VERSION_FILE="version.txt"
 
-# URL da API do GitHub para tags
+# GitHub API URL for tags
 API_URL="https://api.github.com/repos/$REPO/tags"
 
-# Nome do arquivo ZIP esperado na release
+# Expected ZIP file name in the release
 ZIP_FILE_NAME="trimui-HandheldDatabase.zip"
 
-# Função para obter a versão local
+# Function to get the local version
 get_local_version() {
     if [[ -f "$VERSION_FILE" ]]; then
         cat "$VERSION_FILE" | tr -d '[:space:]'
     else
-        echo "v0.0.0" # Versão padrão caso não exista o arquivo
+        echo "v0.0.0" # Default version if the file does not exist
     fi
 }
 
-# Função para obter a versão mais recente do GitHub
+# Function to get the latest version from GitHub
 get_latest_version() {
-    curl -s "$API_URL" | jq -r '.[0].name'
+    local latest_version=$(curl -s -k "$API_URL" | grep -o '"name": "[^"]*' | head -n 1 | cut -d '"' -f 4)
+    # If the version does not start with 'v', add the 'v'
+    if [[ ! $latest_version =~ ^v ]]; then
+        latest_version="v$latest_version"
+    fi
+    echo "$latest_version"
 }
 
-# Função para baixar a release mais recente
+# Function to download the latest release
 download_latest_release() {
     local version="$1"
     local url="https://github.com/$REPO/releases/download/$version/$ZIP_FILE_NAME"
 
-    echo "Baixando a release mais recente de: $url"
-    curl -L -o latest_release.zip "$url"
+    echo "Downloading the latest release from: $url"
+    if ! curl -L -k -o latest_release.zip "$url"; then
+        echo "Error downloading the release. The file was not deleted."
+        exit 1
+    fi
 }
 
-# Função para limpar arquivos locais, exceto o ZIP e o ota.sh
+# Function to clean local files, except ZIP and ota.sh
 clean_local_files() {
-    echo "Limpando arquivos locais (exceto o ZIP e ota.sh)..."
-    find . -mindepth 1 ! -name "latest_release.zip" ! -name "ota.sh" -exec rm -rf {} +
+    echo "Cleaning local files (except ZIP, ota.sh, and launch.sh)..."
+    find . -mindepth 1 ! -name "latest_release.zip" ! -name "ota.sh" ! -name "launch.sh" -exec rm -rf {} +
 }
 
-# Função para extrair a nova versão
+# Function to extract the new version
 extract_new_version() {
-    echo "Extraindo nova versão..."
+    echo "Extracting new version..."
     unzip -o latest_release.zip -d temp_extract
 
-    # Move todos os arquivos extraídos para a raiz do projeto
+    # Move all extracted files to the root of the project
     mv temp_extract/*/* . 2>/dev/null || true
 
-    # Remove a pasta temporária
+    # Remove the temporary folder
     rm -rf temp_extract
 
-    echo "Removendo o arquivo ZIP..."
+    echo "Removing the ZIP file..."
     rm -f latest_release.zip
 }
 
-# Fluxo principal
+# Main flow
 local_version=$(get_local_version)
 latest_version=$(get_latest_version)
 
-echo "Versão local: $local_version"
-echo "Versão mais recente: $latest_version"
+echo "Local version: $local_version"
+echo "Latest version: $latest_version"
 
 if [[ "$local_version" == "$latest_version" ]]; then
-    echo "Você já está na versão mais recente."
+    echo "You are already on the latest version."
 else
-    echo "Atualizando para a versão mais recente..."
+    echo "Updating to the latest version..."
     download_latest_release "$latest_version"
     clean_local_files
     extract_new_version
     echo "$latest_version" > "$VERSION_FILE"
-    echo "Atualização concluída para a versão $latest_version."
+    echo "Update complete to version $latest_version."
 fi
