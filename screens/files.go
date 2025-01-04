@@ -2,7 +2,6 @@ package screens
 
 import (
 	"context"
-	"fmt"
 	"handheldui/components"
 	"handheldui/helpers/sdlutils"
 	"handheldui/helpers/wrappers"
@@ -34,7 +33,7 @@ func NewFilesScreen(renderer *sdl.Renderer) (*FilesScreen, error) {
 		return item["name"].(string)
 	})
 
-	progressBar := components.NewProgressBarComponent(renderer, 300, 20, 490, 320, vars.Colors.PRIMARY, vars.Colors.SECONDARY)
+	progressBar := components.NewProgressBarComponent(renderer, 300, 20, 490, 320, vars.Colors.WHITE, vars.Colors.SECONDARY)
 
 	return &FilesScreen{
 		renderer:      renderer,
@@ -54,8 +53,6 @@ func (f *FilesScreen) InitRepositories() {
 
 		collections := currentRepoDetails.Collections
 		extList := currentRepoDetails.ExtList
-
-		fmt.Println("collections", collections)
 
 		// Initializes an items slice
 		var items []map[string]interface{}
@@ -154,7 +151,11 @@ func (f *FilesScreen) Draw() {
 
 		// Displays only the progress bar
 		sdlutils.RenderTexture(f.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+
 		f.progressBar.Draw()
+
+		sdlutils.RenderTexture(f.renderer, "assets/textures/ui_controls_1280_720_download.bmp", "Q3", "Q4")
+
 	} else {
 
 		// Displays the list and other screen elements
@@ -178,8 +179,6 @@ func (f *FilesScreen) downloadFile(path string, selectedItem map[string]interfac
 	fileName := selectedItem["name"].(string)
 	unzip := selectedItem["unzip"].(bool)
 
-	fmt.Println("unzip", unzip)
-
 	// Creates a context to cancel the download
 	ctx, cancel := context.WithCancel(context.Background())
 	f.cancelDownload = cancel
@@ -187,9 +186,9 @@ func (f *FilesScreen) downloadFile(path string, selectedItem map[string]interfac
 	f.progressBar.SetProgress(0.0)
 	f.isDownloading = true
 
-	// Faz o download do arquivo
+	// Download file
 	err := services.DownloadFile(ctx, path, fileName, uri, func(downloaded, total int64) {
-		// Atualiza o progresso
+		// Update progress
 		f.progressBar.SetProgress(float64(downloaded) / float64(total) * 100)
 		if f.progressBar.GetProgress() >= 100 {
 			f.isDownloading = false
@@ -215,16 +214,16 @@ func (f *FilesScreen) unzipFile(path string, fileName string) {
 	go func() {
 		err := wrappers.UnzipFile(zipFilePath, destDir)
 		if err != nil {
-			fmt.Printf("Error extracting file: %v\n", err)
+			output.Printf("Error extracting file: %v\n", err)
 			return
 		}
 
 		// Remove the ZIP file after extraction
 		err = os.Remove(zipFilePath)
 		if err != nil {
-			fmt.Printf("Error removing zip file: %v\n", err)
+			output.Printf("Error removing zip file: %v\n", err)
 		} else {
-			fmt.Printf("Successfully removed zip file: %s\n", zipFilePath)
+			output.Printf("Successfully removed zip file: %s\n", zipFilePath)
 		}
 	}()
 }

@@ -50,7 +50,7 @@ func (s *SystemsScreen) InitSystems() {
 		systemsList[i] = system.(map[string]interface{})
 	}
 
-	fmt.Println(systemsList)
+	output.Printf("Systems list loaded: %s", systemsList)
 
 	s.listComponent.SetItems(systemsList)
 	s.initialized = true

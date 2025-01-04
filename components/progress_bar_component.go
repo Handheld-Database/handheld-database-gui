@@ -44,10 +44,10 @@ func (p *ProgressBarComponent) Draw() {
 	// Draws the border of the progress bar
 	p.renderer.SetDrawColor(p.borderColor.R, p.borderColor.G, p.borderColor.B, p.borderColor.A)
 	p.renderer.FillRect(&sdl.Rect{
-		X: p.x,
-		Y: p.y,
-		W: p.width,
-		H: p.height,
+		X: p.x - 8,
+		Y: p.y - 8,
+		W: p.width + 16,
+		H: p.height + 16,
 	})
 
 	// Draws the filled part of the progress bar
