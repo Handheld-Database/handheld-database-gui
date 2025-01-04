@@ -80,11 +80,11 @@ The default configuration file (`config.json`) is structured as shown below. You
             "extlist": [".mp3"],
             "collections": [
                 {
-                    "name": "geniesduclassique_vol3no01",
+                    "name": "geniesduclassique_vol3no01", // https://archive.org/details/geniesduclassique_vol3no01
                     "unzip": false
                 },
                 {
-                    "name": "geniesduclassique_vol3no02",
+                    "name": "geniesduclassique_vol3no02", // https://archive.org/details/geniesduclassique_vol3no02
                     "unzip": false
                 }
             ]
