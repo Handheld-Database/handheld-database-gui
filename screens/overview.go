@@ -44,7 +44,7 @@ func (o *OverviewScreen) InitOverview() {
 	plainOverview := markdown.MarkdownToPlaintext(overview)
 
 	o.textContent = strings.ReplaceAll(plainReview, "%game_overview%", plainOverview)
-	o.textComponent = components.NewTextComponent(o.renderer, o.textContent, vars.LongTextFont, 18, 1200)
+	o.textComponent = components.NewTextComponent(o.renderer, o.textContent, vars.LongTextFont, 15, 1200)
 
 	o.initialized = true
 }
