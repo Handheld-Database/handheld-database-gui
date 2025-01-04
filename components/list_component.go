@@ -108,7 +108,7 @@ func (l *ListComponent) Draw(primaryColor sdl.Color, selectedColor sdl.Color) {
 		}
 		defer texture.Destroy()
 
-		l.renderer.Copy(texture, nil, &sdl.Rect{X: 40, Y: 90 + 30*int32(index), W: textSurface.W, H: textSurface.H})
+		l.renderer.Copy(texture, nil, &sdl.Rect{X: 40, Y: 90 + 48*int32(index), W: textSurface.W, H: textSurface.H})
 	}
 }
 

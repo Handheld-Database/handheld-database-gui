@@ -2,13 +2,18 @@ package screens
 
 import (
 	"context"
+	"fmt"
 	"handheldui/components"
 	"handheldui/helpers/sdlutils"
+	"handheldui/helpers/wrappers"
 	"handheldui/input"
 	"handheldui/output"
 	"handheldui/services"
 	"handheldui/vars"
+	"os"
+	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -25,11 +30,11 @@ type FilesScreen struct {
 }
 
 func NewFilesScreen(renderer *sdl.Renderer) (*FilesScreen, error) {
-	listComponent := components.NewListComponent(renderer, 15, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
 		return item["name"].(string)
 	})
 
-	progressBar := components.NewProgressBarComponent(renderer, 300, 20, 490, 320, sdl.Color{R: 200, G: 200, B: 200, A: 255}, sdl.Color{R: 0, G: 255, B: 0, A: 255})
+	progressBar := components.NewProgressBarComponent(renderer, 300, 20, 490, 320, vars.Colors.PRIMARY, vars.Colors.SECONDARY)
 
 	return &FilesScreen{
 		renderer:      renderer,
@@ -43,69 +48,66 @@ func (f *FilesScreen) InitRepositories() {
 		return
 	}
 
-	var repositoriesList []string
+	if currentRepoDetails, ok := vars.Config.Repositories[vars.CurrentRepo]; ok {
+		f.repoName = currentRepoDetails.Name
+		f.repoPath = currentRepoDetails.Path
 
-	for _, repo := range vars.Config.Repositories {
-		if repoDetails, ok := repo[vars.CurrentRepo]; ok {
-			f.repoName = repoDetails.Name
-			f.repoPath = repoDetails.Path
+		collections := currentRepoDetails.Collections
+		extList := currentRepoDetails.ExtList
 
-			repositoriesList = repoDetails.Repositories
+		fmt.Println("collections", collections)
 
-			// Calls FetchAndSortAllMetadata to retrieve metadata from all repositories
-			allMetadata, err := services.FetchAllMetadata(repositoriesList)
+		// Initializes an items slice
+		var items []map[string]interface{}
+
+		// Calls FetchAndSortAllMetadata to retrieve metadata from all repositories
+		for _, collection := range collections {
+
+			allMetadata, err := services.FetchMetadata(collection.Name)
 			if err != nil {
 				panic(output.Sprintf("Error fetching metadata: %v", err))
 			}
 
-			// Initializes an items slice
-			var items []map[string]interface{}
-
-			// Processes the fetched metadata
-			for _, metadata := range allMetadata {
-				for fileName, fileURL := range metadata {
+			// Process the fetched metadata
+			for fileName, fileURL := range allMetadata {
+				// If extList is empty, add all files
+				if len(extList) == 0 {
 					items = append(items, map[string]interface{}{
 						"name":  fileName,
 						"value": fileURL,
+						"unzip": collection.Unzip,
 					})
+				} else {
+					// Check if the file has one of the specified extensions
+					for _, ext := range extList {
+						if strings.HasSuffix(fileName, ext) {
+							items = append(items, map[string]interface{}{
+								"name":  fileName,
+								"value": fileURL,
+								"unzip": collection.Unzip,
+							})
+							break
+						}
+					}
 				}
 			}
-
-			// Sorts items before updating the list
-			sort.Slice(items, func(i, j int) bool {
-				return items[i]["name"].(string) < items[j]["name"].(string)
-			})
-
-			// Updates the list of items in the component
-			f.listComponent.SetItems(items)
-
-			break
 		}
+
+		// Sorts items before updating the list
+		sort.Slice(items, func(i, j int) bool {
+			return items[i]["name"].(string) < items[j]["name"].(string)
+		})
+
+		// Updates the list of items in the component
+		f.listComponent.SetItems(items)
 	}
 
 	f.initialized = true
 }
 
 func (f *FilesScreen) HandleInput(event input.InputEvent) {
-	if len(f.listComponent.GetItems()) == 0 {
-		return
-	}
-
-	switch event.KeyCode {
-	case "DOWN":
-		f.listComponent.ScrollDown()
-	case "UP":
-		f.listComponent.ScrollUp()
-	case "L1":
-		f.listComponent.PageUp()
-	case "R1":
-		f.listComponent.PageDown()
-	case "A":
-		selectedItem := f.listComponent.GetItems()[f.listComponent.GetSelectedIndex()]
-		url := selectedItem["value"].(string)
-		name := selectedItem["name"].(string)
-		go f.download(f.repoPath, name, url)
-	case "B":
+	// Handle the B button regardless of the list state
+	if event.KeyCode == "B" {
 		if f.isDownloading {
 			if f.cancelDownload != nil {
 				f.cancelDownload() // Cancels the current download
@@ -117,6 +119,27 @@ func (f *FilesScreen) HandleInput(event input.InputEvent) {
 			f.initialized = false
 			vars.CurrentScreen = "repositories_screen"
 		}
+		return
+	}
+
+	// Skip other input handling if the list is empty
+	if len(f.listComponent.GetItems()) == 0 {
+		return
+	}
+
+	// Handle other inputs
+	switch event.KeyCode {
+	case "DOWN":
+		f.listComponent.ScrollDown()
+	case "UP":
+		f.listComponent.ScrollUp()
+	case "L1":
+		f.listComponent.PageUp()
+	case "R1":
+		f.listComponent.PageDown()
+	case "A":
+		selectedItem := f.listComponent.GetItems()[f.listComponent.GetSelectedIndex()]
+		go f.downloadFile(f.repoPath, selectedItem)
 	}
 }
 
@@ -138,10 +161,10 @@ func (f *FilesScreen) Draw() {
 		sdlutils.RenderTexture(f.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 		// Draws the current title
-		sdlutils.DrawText(f.renderer, f.repoName, sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+		sdlutils.DrawText(f.renderer, f.repoName, sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
 
 		// Draws the list component
-		f.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
+		f.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
 		sdlutils.RenderTexture(f.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 	}
@@ -149,7 +172,14 @@ func (f *FilesScreen) Draw() {
 	f.renderer.Present()
 }
 
-func (f *FilesScreen) download(path string, fileName string, uri string) {
+func (f *FilesScreen) downloadFile(path string, selectedItem map[string]interface{}) {
+	// get variables
+	uri := selectedItem["value"].(string)
+	fileName := selectedItem["name"].(string)
+	unzip := selectedItem["unzip"].(bool)
+
+	fmt.Println("unzip", unzip)
+
 	// Creates a context to cancel the download
 	ctx, cancel := context.WithCancel(context.Background())
 	f.cancelDownload = cancel
@@ -157,12 +187,15 @@ func (f *FilesScreen) download(path string, fileName string, uri string) {
 	f.progressBar.SetProgress(0.0)
 	f.isDownloading = true
 
+	// Faz o download do arquivo
 	err := services.DownloadFile(ctx, path, fileName, uri, func(downloaded, total int64) {
-		// Updates the progress
+		// Atualiza o progresso
 		f.progressBar.SetProgress(float64(downloaded) / float64(total) * 100)
 		if f.progressBar.GetProgress() >= 100 {
 			f.isDownloading = false
-			f.cancelDownload = nil
+			if unzip {
+				f.unzipFile(path, fileName)
+			}
 		}
 	})
 
@@ -170,5 +203,28 @@ func (f *FilesScreen) download(path string, fileName string, uri string) {
 		output.Errorf("Error during download", err)
 		f.isDownloading = false
 		f.cancelDownload = nil
+		return
 	}
+}
+
+func (f *FilesScreen) unzipFile(path string, fileName string) {
+	destDir := path
+	zipFilePath := filepath.Join(path, fileName)
+
+	// Call the UnzipFile function inside a goroutine to perform the extraction
+	go func() {
+		err := wrappers.UnzipFile(zipFilePath, destDir)
+		if err != nil {
+			fmt.Printf("Error extracting file: %v\n", err)
+			return
+		}
+
+		// Remove the ZIP file after extraction
+		err = os.Remove(zipFilePath)
+		if err != nil {
+			fmt.Printf("Error removing zip file: %v\n", err)
+		} else {
+			fmt.Printf("Successfully removed zip file: %s\n", zipFilePath)
+		}
+	}()
 }

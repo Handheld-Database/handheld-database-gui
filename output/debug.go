@@ -1,27 +1,30 @@
 package output
 
 import (
-	"fmt"
 	"handheldui/vars"
+	"log"
 )
 
 func Printf(format string, a ...any) (n int, err error) {
-	if vars.Debug {
-		return fmt.Printf(format, a...)
+	if vars.Config.Logs {
+		log.Printf(format, a...)
+		return len(format), nil
 	}
 	return 0, nil
 }
 
 func Errorf(format string, a ...any) (err error) {
-	if vars.Debug {
-		return fmt.Errorf(format, a...)
+	if vars.Config.Logs {
+		log.Printf("ERROR: "+format, a...)
+		return nil
 	}
 	return nil
 }
 
 func Sprintf(format string, a ...any) string {
-	if vars.Debug {
-		return fmt.Sprintf(format, a...)
+	if vars.Config.Logs {
+		log.Printf(format, a...)
+		return format
 	}
 	return ""
 }

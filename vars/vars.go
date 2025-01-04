@@ -13,9 +13,6 @@ type FontColors struct {
 }
 
 var (
-	Debug           bool
-	ScreenWidth     int32
-	ScreenHeight    int32
 	CurrentPlatform string
 	CurrentScreen   string
 	CurrentSystem   string
@@ -27,21 +24,16 @@ var (
 	BodyBigFont     *ttf.Font
 	LongTextFont    *ttf.Font
 	Colors          FontColors
-	ControlType     string
 	Config          *ConfigDefinition
 )
 
 func InitVars() {
 	Config = nil
-	Debug = false
-	ScreenWidth = 0
-	ScreenHeight = 0
 	CurrentPlatform = "tsp"
 	CurrentScreen = "home_screen"
 	CurrentSystem = ""
 	CurrentGame = ""
 	CurrentRepo = ""
-	ControlType = "keyboard"
 	BodyFont = nil
 	HeaderFont = nil
 	BodyBigFont = nil

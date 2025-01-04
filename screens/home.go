@@ -17,7 +17,7 @@ type HomeScreen struct {
 }
 
 func NewHomeScreen(renderer *sdl.Renderer) (*HomeScreen, error) {
-	listComponent := components.NewListComponent(renderer, 15, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
 		return item["label"].(string)
 	})
 
@@ -71,10 +71,10 @@ func (h *HomeScreen) Draw() {
 	sdlutils.RenderTexture(h.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Draw the current title
-	sdlutils.DrawText(h.renderer, "Home", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	sdlutils.DrawText(h.renderer, "Home", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
 
 	// Draw the list component
-	h.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
+	h.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
 	sdlutils.RenderTexture(h.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 

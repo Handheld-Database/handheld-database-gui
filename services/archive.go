@@ -20,7 +20,7 @@ var (
 
 // Returns the cache file path specific to the given name
 func getCacheFilePath(name string) string {
-	return filepath.Join(".cache", "archive_metadata", output.Sprintf("cache_%s.json", name))
+	return filepath.Join(".cache", "archive_metadata", fmt.Sprintf("cache_%s.json", name))
 }
 
 func loadCacheFromFile(name string) (map[string]string, error) {

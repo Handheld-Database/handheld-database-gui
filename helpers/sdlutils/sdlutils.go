@@ -91,7 +91,7 @@ func RenderTexture(renderer *sdl.Renderer, imagePath string, startQuadrant, endQ
 	defer textureTexture.Destroy()
 
 	// Get screen width and height
-	screenWidth, screenHeight := vars.ScreenWidth, vars.ScreenHeight
+	screenWidth, screenHeight := vars.Config.Screen["width"], vars.Config.Screen["height"]
 	halfWidth, halfHeight := screenWidth/2, screenHeight/2
 
 	// Define rectangles for each quadrant

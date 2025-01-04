@@ -1,21 +1,27 @@
 {
-    "repositories": [
-        {
-            "saturn": {
-                "name": "SEGA Saturn",
-                "path": "/home/gregorio/tmp/Roms/saturn",
-                "repositories": ["SSCHD-Arquivista", "SaturnCHD2020"]
-            },
-            "gba": {
-                "name": "Game Boy Advanced",
-                "path": "/home/gregorio/tmp/Roms/gba",
-                "repositories": ["GameboyAdvanceRomCollectionByGhostware"]
-            },
-            "md": {
-		        "name": "SEGA Genesis",
-                "path": "/home/gregorio/tmp/Roms/MD",
-                "repositories": ["sega-genesis-romset-ultra-usa"]
-            }
+    "logs": false,
+    "control": {
+        "type": "joystick"
+    },
+    "screen": {
+        "width": 1280,
+        "height": 720
+    },
+    "repositories": {
+        "music": {
+            "name": "Musics",
+            "path": "/mnt/SDCARD/Roms/MUSIC",
+            "extlist": [".mp3"],
+            "collections": [
+                {
+                    "name": "geniesduclassique_vol3no01",
+                    "unzip": false
+                },
+                {
+                    "name": "geniesduclassique_vol3no02",
+                    "unzip": false
+                }
+            ]
         }
-    ]
+    }
 }

@@ -25,7 +25,7 @@ type GamesScreen struct {
 }
 
 func NewGamesScreen(renderer *sdl.Renderer) (*GamesScreen, error) {
-	listComponent := components.NewListComponent(renderer, 15, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 
@@ -106,9 +106,9 @@ func (g *GamesScreen) Draw() {
 
 	sdlutils.RenderTexture(g.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
-	sdlutils.DrawText(g.renderer, "Games List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	sdlutils.DrawText(g.renderer, "Games List", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
 
-	g.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
+	g.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
 	g.textureMutex.Lock()
 	defer g.textureMutex.Unlock()

@@ -52,9 +52,6 @@ func main() {
 		panic(err)
 	}
 
-	vars.ScreenWidth = int32(1280)
-	vars.ScreenHeight = int32(720)
-
 	if err := sdlutils.InitSDL(); err != nil {
 		panic(err)
 	}
@@ -68,11 +65,11 @@ func main() {
 		panic(err)
 	}
 
-	if err := sdlutils.InitFont(NotoSans, &vars.BodyFont, 24); err != nil {
+	if err := sdlutils.InitFont(NotoSans, &vars.BodyFont, 42); err != nil {
 		panic(err)
 	}
 
-	if err := sdlutils.InitFont(kenneyPixelSquare, &vars.BodyBigFont, 58); err != nil {
+	if err := sdlutils.InitFont(kenneyPixelSquare, &vars.BodyBigFont, 72); err != nil {
 		panic(err)
 	}
 
@@ -84,7 +81,12 @@ func main() {
 		panic(err)
 	}
 
-	window, err := sdl.CreateWindow("HandhelDB", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, vars.ScreenWidth, vars.ScreenHeight, sdl.WINDOW_SHOWN)
+	windowTitle := "HandhelDB"
+	windowWidth := vars.Config.Screen["width"]
+	windowHeight := vars.Config.Screen["height"]
+
+	window, err := sdl.CreateWindow(windowTitle, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, windowWidth, windowHeight, sdl.WINDOW_SHOWN)
+
 	if err != nil {
 		panic(err)
 	}

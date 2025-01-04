@@ -16,7 +16,7 @@ type RepositoriesScreen struct {
 }
 
 func NewRepositoriesScreen(renderer *sdl.Renderer) (*RepositoriesScreen, error) {
-	listComponent := components.NewListComponent(renderer, 15, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
 		return item["name"].(string)
 	})
 
@@ -35,13 +35,11 @@ func (r *RepositoriesScreen) InitRepositories() {
 
 	var items []map[string]interface{}
 
-	for _, repoValue := range repositories {
-		for innerKey, details := range repoValue {
-			items = append(items, map[string]interface{}{
-				"name":  details.Name,
-				"value": innerKey,
-			})
-		}
+	for innerKey, repo := range repositories {
+		items = append(items, map[string]interface{}{
+			"name":  repo.Name,
+			"value": innerKey,
+		})
 	}
 
 	r.listComponent.SetItems(items)
@@ -81,10 +79,10 @@ func (r *RepositoriesScreen) Draw() {
 	sdlutils.RenderTexture(r.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Draw the current title
-	sdlutils.DrawText(r.renderer, "Repositories List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	sdlutils.DrawText(r.renderer, "Repositories List", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
 
 	// Draw the list component
-	r.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
+	r.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
 	sdlutils.RenderTexture(r.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 
