@@ -50,6 +50,35 @@ func (l *ListComponent) ScrollUp() {
 	}
 }
 
+func (l *ListComponent) PageDown() {
+	if l.selectedIndex < len(l.items)-1 {
+		l.selectedIndex += l.maxVisibleItems
+		if l.selectedIndex >= len(l.items) {
+			l.selectedIndex = len(l.items) - 1
+		}
+		l.scrollOffset = l.selectedIndex - (l.selectedIndex % l.maxVisibleItems)
+		if l.scrollOffset+l.maxVisibleItems > len(l.items) {
+			l.scrollOffset = len(l.items) - l.maxVisibleItems
+			if l.scrollOffset < 0 {
+				l.scrollOffset = 0
+			}
+		}
+	}
+}
+
+func (l *ListComponent) PageUp() {
+	if l.selectedIndex > 0 {
+		l.selectedIndex -= l.maxVisibleItems
+		if l.selectedIndex < 0 {
+			l.selectedIndex = 0
+		}
+		l.scrollOffset = l.selectedIndex - (l.selectedIndex % l.maxVisibleItems)
+		if l.scrollOffset < 0 {
+			l.scrollOffset = 0
+		}
+	}
+}
+
 func (l *ListComponent) Draw(primaryColor sdl.Color, selectedColor sdl.Color) {
 	// Draw the items
 	startIndex := l.scrollOffset
@@ -67,19 +96,19 @@ func (l *ListComponent) Draw(primaryColor sdl.Color, selectedColor sdl.Color) {
 		itemText := l.itemFormatter(index+startIndex, item)
 		textSurface, err := sdlutils.RenderText(itemText, color, vars.BodyFont)
 		if err != nil {
-			output.Printf("Error rendering text: %v\n", err)
+			output.Errorf("Error rendering text: %v\n", err)
 			return
 		}
 		defer textSurface.Free()
 
 		texture, err := l.renderer.CreateTextureFromSurface(textSurface)
 		if err != nil {
-			output.Printf("Error creating texture: %v\n", err)
+			output.Errorf("Error creating texture: %v\n", err)
 			return
 		}
 		defer texture.Destroy()
 
-		l.renderer.Copy(texture, nil, &sdl.Rect{X: 40, Y: 90 + 30*int32(index), W: textSurface.W, H: textSurface.H})
+		l.renderer.Copy(texture, nil, &sdl.Rect{X: 40, Y: 90 + 48*int32(index), W: textSurface.W, H: textSurface.H})
 	}
 }
 

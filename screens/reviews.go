@@ -20,7 +20,7 @@ type ReviewsScreen struct {
 }
 
 func NewReviewsScreen(renderer *sdl.Renderer) (*ReviewsScreen, error) {
-	listComponent := components.NewListComponent(renderer, 19, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 
@@ -39,7 +39,7 @@ func (r *ReviewsScreen) InitReviews() {
 
 	testers, err := services.FetchTesters(vars.CurrentPlatform, vars.CurrentSystem, vars.CurrentGame)
 	if err != nil {
-		output.Printf("Error fetching games: %v\n", err)
+		output.Errorf("Error fetching games: %v\n", err)
 		return
 	}
 
@@ -62,6 +62,10 @@ func (r *ReviewsScreen) HandleInput(event input.InputEvent) {
 		r.listComponent.ScrollDown()
 	case "UP":
 		r.listComponent.ScrollUp()
+	case "L1":
+		r.listComponent.PageUp()
+	case "R1":
+		r.listComponent.PageDown()
 	case "A":
 		r.showReview()
 	case "B":
@@ -80,10 +84,10 @@ func (r *ReviewsScreen) Draw() {
 	sdlutils.RenderTexture(r.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Draw the current title
-	sdlutils.DrawText(r.renderer, "Reviews List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	sdlutils.DrawText(r.renderer, "Reviews List", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
 
 	// Draw the list component
-	r.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
+	r.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
 	sdlutils.RenderTexture(r.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 

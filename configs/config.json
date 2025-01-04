@@ -1,0 +1,27 @@
+{
+    "logs": false,
+    "control": {
+        "type": "joystick"
+    },
+    "screen": {
+        "width": 1280,
+        "height": 720
+    },
+    "repositories": {
+        "music": {
+            "name": "Musics",
+            "path": "/mnt/SDCARD/Roms/MUSIC",
+            "extlist": [".mp3"],
+            "collections": [
+                {
+                    "name": "geniesduclassique_vol3no01",
+                    "unzip": false
+                },
+                {
+                    "name": "geniesduclassique_vol3no02",
+                    "unzip": false
+                }
+            ]
+        }
+    }
+}

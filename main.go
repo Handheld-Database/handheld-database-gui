@@ -38,8 +38,19 @@ func main() {
 
 	vars.InitVars()
 
-	vars.ScreenWidth = int32(1280)
-	vars.ScreenHeight = int32(720)
+	var err error
+
+	configFilePath := "configs/config.json"
+	configFile, err := os.ReadFile(configFilePath)
+	if err != nil {
+		log.Fatalf("Error reading config file: %v\n", err)
+	}
+
+	vars.Config, err = vars.LoadConfig(configFile)
+
+	if err != nil {
+		panic(err)
+	}
 
 	if err := sdlutils.InitSDL(); err != nil {
 		panic(err)
@@ -54,11 +65,11 @@ func main() {
 		panic(err)
 	}
 
-	if err := sdlutils.InitFont(kenneyPixelSquare, &vars.BodyFont, 24); err != nil {
+	if err := sdlutils.InitFont(NotoSans, &vars.BodyFont, 42); err != nil {
 		panic(err)
 	}
 
-	if err := sdlutils.InitFont(kenneyPixelSquare, &vars.BodyBigFont, 58); err != nil {
+	if err := sdlutils.InitFont(kenneyPixelSquare, &vars.BodyBigFont, 72); err != nil {
 		panic(err)
 	}
 
@@ -70,7 +81,12 @@ func main() {
 		panic(err)
 	}
 
-	window, err := sdl.CreateWindow("Systems List", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, vars.ScreenWidth, vars.ScreenHeight, sdl.WINDOW_SHOWN)
+	windowTitle := "HandhelDB"
+	windowWidth := vars.Config.Screen["width"]
+	windowHeight := vars.Config.Screen["height"]
+
+	window, err := sdl.CreateWindow(windowTitle, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, windowWidth, windowHeight, sdl.WINDOW_SHOWN)
+
 	if err != nil {
 		panic(err)
 	}
@@ -83,6 +99,21 @@ func main() {
 		panic(err)
 	}
 	defer renderer.Destroy()
+
+	homeScreen, err := screens.NewHomeScreen(renderer)
+	if err != nil {
+		panic(err)
+	}
+
+	repositoriesScreen, err := screens.NewRepositoriesScreen(renderer)
+	if err != nil {
+		panic(err)
+	}
+
+	filesScreen, err := screens.NewFilesScreen(renderer)
+	if err != nil {
+		panic(err)
+	}
 
 	systemsScreen, err := screens.NewSystemsScreen(renderer)
 	if err != nil {
@@ -105,17 +136,23 @@ func main() {
 	}
 
 	screensMap := map[string]func(){
-		"systems_screen":  systemsScreen.Draw,
-		"games_screen":    gamesScreen.Draw,
-		"overview_screen": overviewScreen.Draw,
-		"reviews_screen":  reviewsScreen.Draw,
+		"home_screen":         homeScreen.Draw,
+		"repositories_screen": repositoriesScreen.Draw,
+		"files_screen":        filesScreen.Draw,
+		"systems_screen":      systemsScreen.Draw,
+		"games_screen":        gamesScreen.Draw,
+		"overview_screen":     overviewScreen.Draw,
+		"reviews_screen":      reviewsScreen.Draw,
 	}
 
 	inputHandlers := map[string]func(input.InputEvent){
-		"systems_screen":  systemsScreen.HandleInput,
-		"games_screen":    gamesScreen.HandleInput,
-		"overview_screen": overviewScreen.HandleInput,
-		"reviews_screen":  reviewsScreen.HandleInput,
+		"home_screen":         homeScreen.HandleInput,
+		"repositories_screen": repositoriesScreen.HandleInput,
+		"files_screen":        filesScreen.HandleInput,
+		"systems_screen":      systemsScreen.HandleInput,
+		"games_screen":        gamesScreen.HandleInput,
+		"overview_screen":     overviewScreen.HandleInput,
+		"reviews_screen":      reviewsScreen.HandleInput,
 	}
 
 	input.StartListening()

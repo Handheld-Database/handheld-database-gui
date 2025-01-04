@@ -8,21 +8,24 @@ import (
 
 // Element represents a UI element with padding and margin
 type Element struct {
-	Width, Height int32
-	Padding       int32
-	Margin        int32
-	Texture       *sdl.Texture
-	Position      string // "top-left", "top-right", "bottom-left", "bottom-right"
+	ScreenHeight, ScreenWidth int32
+	Width, Height             int32
+	Padding                   int32
+	Margin                    int32
+	Texture                   *sdl.Texture
+	Position                  string // "top-left", "top-right", "bottom-left", "bottom-right"
 }
 
 // NewElement creates a new element with the given dimensions and texture
 func NewElement(width, height, padding, margin int32, position string) *Element {
 	return &Element{
-		Width:    width,
-		Height:   height,
-		Padding:  padding,
-		Margin:   margin,
-		Position: position,
+		ScreenHeight: vars.Config.Screen["height"],
+		ScreenWidth:  vars.Config.Screen["width"],
+		Width:        width,
+		Height:       height,
+		Padding:      padding,
+		Margin:       margin,
+		Position:     position,
 	}
 }
 
@@ -44,14 +47,14 @@ func (e *Element) GetPosition() sdl.Rect {
 		x = e.Margin
 		y = e.Margin
 	case "top-right":
-		x = vars.ScreenWidth - e.Width - e.Margin
+		x = e.ScreenWidth - e.Width - e.Margin
 		y = e.Margin
 	case "bottom-left":
 		x = e.Margin
-		y = vars.ScreenHeight - e.Height - e.Margin
+		y = e.ScreenHeight - e.Height - e.Margin
 	case "bottom-right":
-		x = vars.ScreenWidth - e.Width - e.Margin
-		y = vars.ScreenHeight - e.Height - e.Margin
+		x = e.ScreenWidth - e.Width - e.Margin
+		y = e.ScreenHeight - e.Height - e.Margin
 	default:
 		x = e.Margin
 		y = e.Margin

@@ -27,12 +27,12 @@ func GetRankColor(key string) string {
 func FetchPlatformsIndex() ([]string, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/platforms/index.json", baseURL))
 	if err != nil {
-		return nil, fmt.Errorf("error fetching popular platforms: %v", err)
+		return nil, output.Errorf("error fetching popular platforms: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error fetching popular platforms: %v", resp.Status)
+		return nil, output.Errorf("error fetching popular platforms: %v", resp.Status)
 	}
 
 	var result struct {
@@ -40,7 +40,7 @@ func FetchPlatformsIndex() ([]string, error) {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("error decoding response: %v", err)
+		return nil, output.Errorf("error decoding response: %v", err)
 	}
 
 	return result.Platforms, nil
@@ -50,17 +50,17 @@ func FetchPlatformsIndex() ([]string, error) {
 func FetchPlatform(platformKey string) (map[string]interface{}, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/platforms/%s/index.json", baseURL, platformKey))
 	if err != nil {
-		return nil, fmt.Errorf("error fetching systems from %s: %v", platformKey, err)
+		return nil, output.Errorf("error fetching systems from %s: %v", platformKey, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error fetching systems from %s: %v", platformKey, resp.Status)
+		return nil, output.Errorf("error fetching systems from %s: %v", platformKey, resp.Status)
 	}
 
 	var result map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("error decoding response: %v", err)
+		return nil, output.Errorf("error decoding response: %v", err)
 	}
 
 	return result, nil
@@ -70,12 +70,12 @@ func FetchPlatform(platformKey string) (map[string]interface{}, error) {
 func FetchGames(platformKey, systemKey string) ([]map[string]interface{}, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/platforms/%s/systems/%s/index.json", baseURL, platformKey, systemKey))
 	if err != nil {
-		return nil, fmt.Errorf("error fetching games from %s/%s: %v", platformKey, systemKey, err)
+		return nil, output.Errorf("error fetching games from %s/%s: %v", platformKey, systemKey, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error fetching games from %s/%s: %v", platformKey, systemKey, resp.Status)
+		return nil, output.Errorf("error fetching games from %s/%s: %v", platformKey, systemKey, resp.Status)
 	}
 
 	var result struct {
@@ -83,7 +83,7 @@ func FetchGames(platformKey, systemKey string) ([]map[string]interface{}, error)
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("error decoding response: %v", err)
+		return nil, output.Errorf("error decoding response: %v", err)
 	}
 
 	return result.Games, nil
@@ -93,12 +93,12 @@ func FetchGames(platformKey, systemKey string) ([]map[string]interface{}, error)
 func FetchTesters(platformKey, systemKey, gameKey string) ([]string, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/platforms/%s/systems/%s/%s/%s.json", baseURL, platformKey, systemKey, gameKey, gameKey))
 	if err != nil {
-		return nil, fmt.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, err)
+		return nil, output.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, resp.Status)
+		return nil, output.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, resp.Status)
 	}
 
 	var result struct {
@@ -106,7 +106,7 @@ func FetchTesters(platformKey, systemKey, gameKey string) ([]string, error) {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("error decoding response: %v", err)
+		return nil, output.Errorf("error decoding response: %v", err)
 	}
 
 	return result.Testers, nil
@@ -116,17 +116,17 @@ func FetchTesters(platformKey, systemKey, gameKey string) ([]string, error) {
 func FetchGameDetails(platformKey, systemKey, gameKey string) (map[string]interface{}, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/platforms/%s/systems/%s/%s/%s.json", baseURL, platformKey, systemKey, gameKey, gameKey))
 	if err != nil {
-		return nil, fmt.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, err)
+		return nil, output.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, resp.Status)
+		return nil, output.Errorf("error fetching game details from %s/%s/%s: %v", platformKey, systemKey, gameKey, resp.Status)
 	}
 
 	var result map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("error decoding response: %v", err)
+		return nil, output.Errorf("error decoding response: %v", err)
 	}
 	return result, nil
 }
@@ -136,17 +136,17 @@ func FetchGameOverview(gameKey string) (string, error) {
 	output.Printf("%s/commons/overviews/%s.overview.md", baseURL, gameKey)
 	resp, err := http.Get(fmt.Sprintf("%s/commons/overviews/%s.overview.md", baseURL, gameKey))
 	if err != nil {
-		return "", fmt.Errorf("error fetching game overview: %v", err)
+		return "", output.Errorf("error fetching game overview: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("error fetching game overview: %v", resp.Status)
+		return "", output.Errorf("error fetching game overview: %v", resp.Status)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("error reading response body: %v", err)
+		return "", output.Errorf("error reading response body: %v", err)
 	}
 
 	return string(body), nil
@@ -156,17 +156,17 @@ func FetchGameOverview(gameKey string) (string, error) {
 func FetchGameMarkdown(platformKey, systemKey, gameKey, tester string) (string, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/platforms/%s/systems/%s/%s/%s.%s.md", baseURL, platformKey, systemKey, gameKey, gameKey, tester))
 	if err != nil {
-		return "", fmt.Errorf("error fetching game markdown from %s/%s/%s: %v", platformKey, systemKey, gameKey, err)
+		return "", output.Errorf("error fetching game markdown from %s/%s/%s: %v", platformKey, systemKey, gameKey, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("error fetching game markdown from %s/%s/%s: %v", platformKey, systemKey, gameKey, resp.Status)
+		return "", output.Errorf("error fetching game markdown from %s/%s/%s: %v", platformKey, systemKey, gameKey, resp.Status)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("error reading response body: %v", err)
+		return "", output.Errorf("error reading response body: %v", err)
 	}
 
 	return string(body), nil
@@ -198,17 +198,17 @@ func FilterGames(games []map[string]interface{}, searchTerm, rankFilter string) 
 func FetchCollaborators() (map[string]interface{}, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/commons/collaborators/collaborators.json", baseURL))
 	if err != nil {
-		return nil, fmt.Errorf("error fetching collaborators: %v", err)
+		return nil, output.Errorf("error fetching collaborators: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error fetching collaborators: %v", resp.Status)
+		return nil, output.Errorf("error fetching collaborators: %v", resp.Status)
 	}
 
 	var result map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("error decoding response: %v", err)
+		return nil, output.Errorf("error decoding response: %v", err)
 	}
 
 	return result, nil

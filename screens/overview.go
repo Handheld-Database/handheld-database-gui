@@ -73,7 +73,7 @@ func (o *OverviewScreen) Draw() {
 	sdlutils.RenderTexture(o.renderer, "assets/textures/bg_overlay.bmp", "Q2", "Q4")
 
 	// Draw the title
-	sdlutils.DrawText(o.renderer, "Overview", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	sdlutils.DrawText(o.renderer, "Overview", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
 
 	// Draw the text component with scrolling
 	o.textComponent.Draw(vars.Colors.WHITE)

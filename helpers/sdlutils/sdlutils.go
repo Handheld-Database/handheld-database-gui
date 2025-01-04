@@ -1,9 +1,9 @@
 package sdlutils
 
 import (
-	"fmt"
 	"handheldui/output"
 	"handheldui/vars"
+	"log"
 	"strings"
 
 	"github.com/veandco/go-sdl2/img"
@@ -15,13 +15,13 @@ import (
 func LoadTexture(renderer *sdl.Renderer, imagePath string) (*sdl.Texture, error) {
 	imgSurface, err := img.Load(imagePath)
 	if err != nil {
-		return nil, fmt.Errorf("error loading image: %w", err)
+		return nil, output.Errorf("error loading image: %w", err)
 	}
 	defer imgSurface.Free()
 
 	texture, err := renderer.CreateTextureFromSurface(imgSurface)
 	if err != nil {
-		return nil, fmt.Errorf("error creating texture: %w", err)
+		return nil, output.Errorf("error creating texture: %w", err)
 	}
 	return texture, nil
 }
@@ -30,7 +30,7 @@ func LoadTexture(renderer *sdl.Renderer, imagePath string) (*sdl.Texture, error)
 func LoadFont(rwops *sdl.RWops, size int) (*ttf.Font, error) {
 	font, err := ttf.OpenFontRW(rwops, 1, size)
 	if err != nil {
-		return nil, fmt.Errorf("error loading font: %w", err)
+		return nil, output.Errorf("error loading font: %w", err)
 	}
 	return font, nil
 }
@@ -40,7 +40,7 @@ func DrawText(renderer *sdl.Renderer, text string, position sdl.Point, color sdl
 	// Render the text to a surface
 	textSurface, err := RenderText(text, color, font)
 	if err != nil {
-		output.Printf("Error rendering text: %v\n", err)
+		output.Errorf("Error rendering text: %v\n", err)
 		return
 	}
 	defer textSurface.Free()
@@ -48,7 +48,7 @@ func DrawText(renderer *sdl.Renderer, text string, position sdl.Point, color sdl
 	// Create a texture from the surface
 	textTexture, err := renderer.CreateTextureFromSurface(textSurface)
 	if err != nil {
-		output.Printf("Error creating texture: %v\n", err)
+		output.Errorf("Error creating texture: %v\n", err)
 		return
 	}
 	defer textTexture.Destroy()
@@ -69,7 +69,7 @@ func DrawText(renderer *sdl.Renderer, text string, position sdl.Point, color sdl
 func RenderText(text string, color sdl.Color, font *ttf.Font) (*sdl.Surface, error) {
 	textSurface, err := font.RenderUTF8Blended(text, color)
 	if err != nil {
-		return nil, fmt.Errorf("error rendering text: %w", err)
+		return nil, output.Errorf("error rendering text: %w", err)
 	}
 	return textSurface, nil
 }
@@ -78,20 +78,20 @@ func RenderTexture(renderer *sdl.Renderer, imagePath string, startQuadrant, endQ
 	// Load the texture image
 	textureSurface, err := sdl.LoadBMP(imagePath)
 	if err != nil {
-		output.Printf("Error loading texture image: %v\n", err)
+		output.Errorf("Error loading texture image: %v\n", err)
 		return
 	}
 	defer textureSurface.Free()
 
 	textureTexture, err := renderer.CreateTextureFromSurface(textureSurface)
 	if err != nil {
-		output.Printf("Error creating texture from image: %v\n", err)
+		output.Errorf("Error creating texture from image: %v\n", err)
 		return
 	}
 	defer textureTexture.Destroy()
 
 	// Get screen width and height
-	screenWidth, screenHeight := vars.ScreenWidth, vars.ScreenHeight
+	screenWidth, screenHeight := vars.Config.Screen["width"], vars.Config.Screen["height"]
 	halfWidth, halfHeight := screenWidth/2, screenHeight/2
 
 	// Define rectangles for each quadrant
@@ -107,7 +107,7 @@ func RenderTexture(renderer *sdl.Renderer, imagePath string, startQuadrant, endQ
 	endRect, endOk := quadrants[endQuadrant]
 
 	if !startOk || !endOk {
-		output.Printf("Unknown quadrant(s): %s, %s\n", startQuadrant, endQuadrant)
+		output.Errorf("Unknown quadrant(s): %s, %s\n", startQuadrant, endQuadrant)
 		return
 	}
 
@@ -153,14 +153,14 @@ func RenderTextureAdjusted(renderer *sdl.Renderer, imagePath string, rect sdl.Re
 	// Load the texture image
 	textureSurface, err := sdl.LoadBMP(imagePath)
 	if err != nil {
-		output.Printf("Error loading texture image: %v\n", err)
+		output.Errorf("Error loading texture image: %v\n", err)
 		return
 	}
 	defer textureSurface.Free()
 
 	textureTexture, err := renderer.CreateTextureFromSurface(textureSurface)
 	if err != nil {
-		output.Printf("Error creating texture from image: %v\n", err)
+		output.Errorf("Error creating texture from image: %v\n", err)
 		return
 	}
 	defer textureTexture.Destroy()
@@ -205,4 +205,39 @@ func textWidth(font *ttf.Font, text string) int {
 	defer surface.Free()
 
 	return int(surface.W)
+}
+
+func RenderScaledTexture(renderer *sdl.Renderer, imgPath string, x, y int32, scale float64) {
+	// Carregar a textura
+	texture, err := LoadTexture(renderer, imgPath)
+	if err != nil {
+		log.Printf("Erro ao carregar textura: %s, %v", imgPath, err)
+		return
+	}
+	defer texture.Destroy()
+
+	// Obter dimensões originais da textura
+	_, _, width, height, err := texture.Query()
+	if err != nil {
+		log.Printf("Erro ao consultar textura: %v", err)
+		return
+	}
+
+	// Ajustar dimensões pela escala
+	scaledWidth := int32(float64(width) * scale)
+	scaledHeight := int32(float64(height) * scale)
+
+	// Calcular o retângulo de destino (centralizando)
+	dstRect := sdl.Rect{
+		X: x - scaledWidth/2,
+		Y: y - scaledHeight/2,
+		W: scaledWidth,
+		H: scaledHeight,
+	}
+
+	// Renderizar a textura na escala ajustada
+	err = renderer.Copy(texture, nil, &dstRect)
+	if err != nil {
+		log.Printf("Erro ao renderizar textura: %v", err)
+	}
 }

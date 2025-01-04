@@ -1,7 +1,6 @@
 package output
 
 import (
-	"log"
 	"time"
 
 	"github.com/veandco/go-sdl2/mix"
@@ -12,7 +11,7 @@ func PlaySound(filename string, volume int, loop bool) {
 	go func() {
 		chunk, err := mix.LoadWAV(filename)
 		if err != nil {
-			log.Printf("Failed to load sound: %s\n", err)
+			Printf("Failed to load sound: %s\n", err)
 			return
 		}
 

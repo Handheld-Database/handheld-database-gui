@@ -8,7 +8,6 @@ import (
 	"handheldui/output"
 	"handheldui/services"
 	"handheldui/vars"
-	"os"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -21,7 +20,7 @@ type SystemsScreen struct {
 }
 
 func NewSystemsScreen(renderer *sdl.Renderer) (*SystemsScreen, error) {
-	listComponent := components.NewListComponent(renderer, 19, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 
@@ -41,7 +40,7 @@ func (s *SystemsScreen) InitSystems() {
 
 	systemsData, err := services.FetchPlatform(s.detectedPlatform)
 	if err != nil {
-		output.Printf("Error fetching platform data:", err)
+		output.Errorf("Error fetching platform data:", err)
 		return
 	}
 
@@ -50,6 +49,9 @@ func (s *SystemsScreen) InitSystems() {
 	for i, system := range systems {
 		systemsList[i] = system.(map[string]interface{})
 	}
+
+	output.Printf("Systems list loaded: %s", systemsList)
+
 	s.listComponent.SetItems(systemsList)
 	s.initialized = true
 }
@@ -64,10 +66,14 @@ func (s *SystemsScreen) HandleInput(event input.InputEvent) {
 		s.listComponent.ScrollDown()
 	case "UP":
 		s.listComponent.ScrollUp()
+	case "L1":
+		s.listComponent.PageUp()
+	case "R1":
+		s.listComponent.PageDown()
 	case "A":
 		s.showGames()
 	case "B":
-		os.Exit(0)
+		vars.CurrentScreen = "home_screen"
 	}
 }
 
@@ -80,10 +86,10 @@ func (s *SystemsScreen) Draw() {
 	sdlutils.RenderTexture(s.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Draw the current title
-	sdlutils.DrawText(s.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.PRIMARY, vars.HeaderFont)
+	sdlutils.DrawText(s.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
 
 	// Draw the list component
-	s.listComponent.Draw(vars.Colors.WHITE, vars.Colors.SECONDARY)
+	s.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
 	sdlutils.RenderTexture(s.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 

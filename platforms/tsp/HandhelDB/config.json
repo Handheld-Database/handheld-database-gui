@@ -1,0 +1,6 @@
+{
+    "label":	"HandhelDB",
+    "icon":	"icon.png",
+    "launch":	"launch.sh",
+    "description": "HandheldDB"
+}
