@@ -57,6 +57,14 @@ To run the application, execute the following command:
 go run main.go
 ```
 
+## Trimui Smart Pro Installation
+
+1. Download the latest release tagged with `trimui`.  
+2. Extract the contents and locate the `HandheldDatabase` folder.  
+3. Copy the `HandheldDatabase` folder to the `Apps` directory on your Trimui Smart Pro (TSP).  
+4. Restart the device.  
+5. Connect to Wi-Fi to complete the setup.
+
 ## Configuration
 
 The default configuration file (`config.json`) is structured as shown below. You can enable debugging logs, change the control type to keyboard, and adjust the screen resolution. To add collections, simply follow the existing pattern.
@@ -95,22 +103,54 @@ The default configuration file (`config.json`) is structured as shown below. You
 
 ### Adding New Repositories:
 
-For example, to add a new collection of Game Boy Advance (GBA) games, you can add a new repository as follows:
+You will find a file called config.json in the config folder, open it, inside it there will be a list of repositories, one of them is music.
+You can add as many as you want. Let's add a new one that points to this collection of DOS abandonwares: https://archive.org/details/Various_DOS_Abandonware_Ark
 
 ```json
-"gba": {
-    "name": "Game Boy Advanced",
-    "path": "/mnt/SDCARD/Roms/GBA",
-    "extlist": [".gba", ".zip"],
-    "collections": [
-        {
-            "name": "mycollection_archiveorg_zip_format",
-            "unzip": true
-        },
-        {
-            "name": "geniesduclassique_vol3no02_gba_format",
-            "unzip": false
-        }
-    ]
+{
+   "logs":false,
+   "control":{
+      "type":"joystick"
+   },
+   "screen":{
+      "width":1280,
+      "height":720
+   },
+   "repositories":{
+      "music":{
+         "name":"Musics",
+         "path":"/mnt/SDCARD/Roms/MUSIC",
+         "extlist":[
+            ".mp3"
+         ],
+         "collections":[
+            {
+               "name":"geniesduclassique_vol3no01",
+               "unzip":false
+            },
+            {
+               "name":"geniesduclassique_vol3no02",
+               "unzip":false
+            }
+         ]
+      },
+      "dos":{
+         "name":"DOS Games",
+         "path":"/mnt/SDCARD/Roms/DOS",
+         "extlist":[
+            ".zip"
+         ],
+         "collections":[
+            {
+               "name":"Various_DOS_Abandonware_Ark" // you need just the collection name in url,
+               "unzip":false
+            }
+         ]
+      }
+   }
 }
 ```
+
+To check if your JSON is valid, use the website: https://jsonformatter.curiousconcept.com/#
+
+And just save it (remember that this config.json file must be in the tsp)
