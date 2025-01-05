@@ -18,10 +18,15 @@ type ListComponent struct {
 }
 
 func NewListComponent(renderer *sdl.Renderer, maxVisibleItems int, itemFormatter func(index int, item map[string]interface{}) string) *ListComponent {
+	itemsInList := maxVisibleItems
+	if maxVisibleItems > vars.Config.Screen.MaxListItens {
+		itemsInList = vars.Config.Screen.MaxListItens
+	}
+
 	return &ListComponent{
 		renderer:        renderer,
 		itemFormatter:   itemFormatter,
-		maxVisibleItems: maxVisibleItems,
+		maxVisibleItems: itemsInList,
 		items:           []map[string]interface{}{},
 	}
 }
@@ -94,6 +99,12 @@ func (l *ListComponent) Draw(primaryColor sdl.Color, selectedColor sdl.Color) {
 			color = selectedColor
 		}
 		itemText := l.itemFormatter(index+startIndex, item)
+
+		// Check if the itemText exceeds MaxListItemWidth and truncate with "..."
+		if len(itemText) > vars.Config.Screen.MaxListItemWidth {
+			itemText = itemText[:vars.Config.Screen.MaxListItemWidth-3] + "..."
+		}
+
 		textSurface, err := sdlutils.RenderText(itemText, color, vars.BodyFont)
 		if err != nil {
 			output.Errorf("Error rendering text: %v\n", err)

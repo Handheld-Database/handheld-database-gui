@@ -29,7 +29,7 @@ type FilesScreen struct {
 }
 
 func NewFilesScreen(renderer *sdl.Renderer) (*FilesScreen, error) {
-	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, vars.Config.Screen.MaxListItens, func(index int, item map[string]interface{}) string {
 		return item["name"].(string)
 	})
 
@@ -150,16 +150,16 @@ func (f *FilesScreen) Draw() {
 	if f.isDownloading {
 
 		// Displays only the progress bar
-		sdlutils.RenderTexture(f.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+		sdlutils.RenderTextureCover(f.renderer, "assets/textures/bg.bmp")
 
 		f.progressBar.Draw()
 
-		sdlutils.RenderTexture(f.renderer, "assets/textures/ui_controls_1280_720_download.bmp", "Q3", "Q4")
+		sdlutils.RenderTextureCartesian(f.renderer, "assets/textures/$aspect_ratio/ui_controls_download.bmp", "Q3", "Q4")
 
 	} else {
 
 		// Displays the list and other screen elements
-		sdlutils.RenderTexture(f.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+		sdlutils.RenderTextureCartesian(f.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 		// Draws the current title
 		sdlutils.DrawText(f.renderer, f.repoName, sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
@@ -167,7 +167,7 @@ func (f *FilesScreen) Draw() {
 		// Draws the list component
 		f.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
-		sdlutils.RenderTexture(f.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
+		sdlutils.RenderTextureCartesian(f.renderer, "assets/textures/$aspect_ratio/ui_controls.bmp", "Q3", "Q4")
 	}
 
 	f.renderer.Present()

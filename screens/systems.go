@@ -20,7 +20,7 @@ type SystemsScreen struct {
 }
 
 func NewSystemsScreen(renderer *sdl.Renderer) (*SystemsScreen, error) {
-	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, vars.Config.Screen.MaxListItens, func(index int, item map[string]interface{}) string {
 		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
 	})
 
@@ -83,7 +83,7 @@ func (s *SystemsScreen) Draw() {
 	s.renderer.SetDrawColor(255, 255, 255, 255)
 	s.renderer.Clear()
 
-	sdlutils.RenderTexture(s.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+	sdlutils.RenderTextureCartesian(s.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Draw the current title
 	sdlutils.DrawText(s.renderer, "Systems List", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
@@ -91,7 +91,7 @@ func (s *SystemsScreen) Draw() {
 	// Draw the list component
 	s.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
-	sdlutils.RenderTexture(s.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
+	sdlutils.RenderTextureCartesian(s.renderer, "assets/textures/$aspect_ratio/ui_controls.bmp", "Q3", "Q4")
 
 	s.renderer.Present()
 }

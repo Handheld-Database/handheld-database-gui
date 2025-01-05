@@ -16,7 +16,7 @@ type RepositoriesScreen struct {
 }
 
 func NewRepositoriesScreen(renderer *sdl.Renderer) (*RepositoriesScreen, error) {
-	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
+	listComponent := components.NewListComponent(renderer, vars.Config.Screen.MaxListItens, func(index int, item map[string]interface{}) string {
 		return item["name"].(string)
 	})
 
@@ -76,7 +76,7 @@ func (r *RepositoriesScreen) Draw() {
 	r.renderer.SetDrawColor(255, 255, 255, 255)
 	r.renderer.Clear()
 
-	sdlutils.RenderTexture(r.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+	sdlutils.RenderTextureCartesian(r.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Draw the current title
 	sdlutils.DrawText(r.renderer, "Repositories List", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
@@ -84,7 +84,7 @@ func (r *RepositoriesScreen) Draw() {
 	// Draw the list component
 	r.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
-	sdlutils.RenderTexture(r.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
+	sdlutils.RenderTextureCartesian(r.renderer, "assets/textures/$aspect_ratio/ui_controls.bmp", "Q3", "Q4")
 
 	r.renderer.Present()
 }
