@@ -82,8 +82,8 @@ func main() {
 	}
 
 	windowTitle := "HandhelDB"
-	windowWidth := vars.Config.Screen["width"]
-	windowHeight := vars.Config.Screen["height"]
+	windowWidth := vars.Config.Screen.Width
+	windowHeight := vars.Config.Screen.Height
 
 	window, err := sdl.CreateWindow(windowTitle, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, windowWidth, windowHeight, sdl.WINDOW_SHOWN)
 

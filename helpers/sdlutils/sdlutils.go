@@ -1,6 +1,7 @@
 package sdlutils
 
 import (
+	"fmt"
 	"handheldui/output"
 	"handheldui/vars"
 	"log"
@@ -91,7 +92,7 @@ func RenderTexture(renderer *sdl.Renderer, imagePath string, startQuadrant, endQ
 	defer textureTexture.Destroy()
 
 	// Get screen width and height
-	screenWidth, screenHeight := vars.Config.Screen["width"], vars.Config.Screen["height"]
+	screenWidth, screenHeight := vars.Config.Screen.Width, vars.Config.Screen.Height
 	halfWidth, halfHeight := screenWidth/2, screenHeight/2
 
 	// Define rectangles for each quadrant
@@ -240,4 +241,64 @@ func RenderScaledTexture(renderer *sdl.Renderer, imgPath string, x, y int32, sca
 	if err != nil {
 		log.Printf("Erro ao renderizar textura: %v", err)
 	}
+}
+
+func RenderTextureCover(renderer *sdl.Renderer, imagePath string) {
+	// Load the texture image
+	textureSurface, err := sdl.LoadBMP(imagePath)
+	if err != nil {
+		fmt.Printf("Error loading texture image: %v\n", err)
+		return
+	}
+	defer textureSurface.Free()
+
+	textureTexture, err := renderer.CreateTextureFromSurface(textureSurface)
+	if err != nil {
+		fmt.Printf("Error creating texture from image: %v\n", err)
+		return
+	}
+	defer textureTexture.Destroy()
+
+	// Get screen dimensions
+	screenWidth, screenHeight := vars.Config.Screen.Width, vars.Config.Screen.Height
+
+	// Get texture dimensions
+	textureWidth := float64(textureSurface.W)
+	textureHeight := float64(textureSurface.H)
+
+	// Calculate aspect ratios
+	screenAspect := float64(screenWidth) / float64(screenHeight)
+	textureAspect := textureWidth / textureHeight
+
+	var srcRect sdl.Rect
+	if textureAspect > screenAspect {
+		// Texture is wider than screen, crop horizontally
+		newWidth := int32(textureHeight * screenAspect)
+		srcRect = sdl.Rect{
+			X: int32((textureWidth - float64(newWidth)) / 2),
+			Y: 0,
+			W: newWidth,
+			H: int32(textureHeight),
+		}
+	} else {
+		// Texture is taller than screen, crop vertically
+		newHeight := int32(textureWidth / screenAspect)
+		srcRect = sdl.Rect{
+			X: 0,
+			Y: int32((textureHeight - float64(newHeight)) / 2),
+			W: int32(textureWidth),
+			H: newHeight,
+		}
+	}
+
+	// Define destination rectangle (fill the screen)
+	dstRect := sdl.Rect{
+		X: 0,
+		Y: 0,
+		W: int32(screenWidth),
+		H: int32(screenHeight),
+	}
+
+	// Render the texture
+	renderer.Copy(textureTexture, &srcRect, &dstRect)
 }

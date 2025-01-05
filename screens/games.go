@@ -16,12 +16,14 @@ import (
 )
 
 type GamesScreen struct {
-	currentImage  string
-	games         []map[string]interface{}
-	renderer      *sdl.Renderer
-	initialized   bool
-	listComponent *components.ListComponent
-	textureMutex  sync.Mutex
+	currentImageCover string
+	currentImageIcon  string
+	games             []map[string]interface{}
+	renderer          *sdl.Renderer
+	initialized       bool
+	listComponent     *components.ListComponent
+	textureCoverMutex sync.Mutex
+	textureIconMutex  sync.Mutex
 }
 
 func NewGamesScreen(renderer *sdl.Renderer) (*GamesScreen, error) {
@@ -81,17 +83,29 @@ func (g *GamesScreen) LoadGameImage() {
 	selectedIndex := g.listComponent.GetSelectedIndex()
 	if selectedIndex < len(g.games) {
 		gameName := g.games[selectedIndex]["key"].(string)
-		imagePath := image.FetchGameImage(gameName)
+		imageCoverPath := image.FetchGameImage(gameName, "cover")
+		imageIconPath := image.FetchGameImage(gameName, "icon")
 
-		if imagePath != "" {
-			g.textureMutex.Lock()
-			g.currentImage = imagePath
-			g.textureMutex.Unlock()
+		if imageCoverPath != "" {
+			g.textureCoverMutex.Lock()
+			g.currentImageCover = imageCoverPath
+			g.textureCoverMutex.Unlock()
 
 			// Debug message to confirm the texture is loaded
-			output.Printf("Image loaded for game: %s\n", gameName)
+			output.Printf("Cover loaded for game: %s\n", gameName)
 		} else {
-			g.currentImage = ""
+			g.currentImageCover = ""
+		}
+
+		if imageIconPath != "" {
+			g.textureCoverMutex.Lock()
+			g.currentImageIcon = imageIconPath
+			g.textureCoverMutex.Unlock()
+
+			// Debug message to confirm the texture is loaded
+			output.Printf("Icon loaded for game: %s\n", gameName)
+		} else {
+			g.currentImageIcon = ""
 		}
 	}
 }
@@ -104,39 +118,52 @@ func (g *GamesScreen) Draw() {
 	g.renderer.SetDrawColor(255, 255, 255, 255)
 	g.renderer.Clear()
 
-	sdlutils.RenderTexture(g.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+	if g.currentImageCover != "" {
+		sdlutils.RenderTextureCover(g.renderer, g.currentImageCover)
+	} else {
+		sdlutils.RenderTextureCover(g.renderer, "assets/textures/bg.bmp")
+	}
+
+	sdlutils.RenderTextureCover(g.renderer, "assets/textures/bg_overlay.bmp")
 
 	sdlutils.DrawText(g.renderer, "Games List", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
 
 	g.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
-	g.textureMutex.Lock()
-	defer g.textureMutex.Unlock()
+	g.textureCoverMutex.Lock()
+	defer g.textureCoverMutex.Unlock()
 
-	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720.bmp", "Q1", "Q4")
+	if vars.Config.Screen.Width >= 1280 {
 
-	element := geometry.NewElement(280, 280, 0, 78, "top-right")
+		sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720.bmp", "Q1", "Q4")
 
-	if g.currentImage != "" {
-		sdlutils.RenderTextureAdjusted(g.renderer, g.currentImage, element.GetPosition())
-	} else {
-		sdlutils.RenderTextureAdjusted(g.renderer, "assets/textures/not_found.bmp", element.GetPosition())
-		output.Printf("No texture available to draw.")
+		element := geometry.NewElement(280, 280, 0, 78, "top-right")
+
+		if g.currentImageCover != "" {
+			sdlutils.RenderTextureAdjusted(g.renderer, g.currentImageCover, element.GetPosition())
+		} else {
+			sdlutils.RenderTextureAdjusted(g.renderer, "assets/textures/not_found.bmp", element.GetPosition())
+			output.Printf("No texture available to draw.")
+		}
+
+		g.textureIconMutex.Lock()
+		defer g.textureIconMutex.Unlock()
+
+		rankAssets := map[string]string{
+			"PLATINUM": "assets/textures/ui_game_display_rank_platinum_1280_720.bmp",
+			"GOLD":     "assets/textures/ui_game_display_rank_gold_1280_720.bmp",
+			"SILVER":   "assets/textures/ui_game_display_rank_silver_1280_720.bmp",
+			"BRONZE":   "assets/textures/ui_game_display_rank_bronze_1280_720.bmp",
+			"FAULTY":   "assets/textures/ui_game_display_rank_faulty_1280_720.bmp",
+		}
+
+		selectedIndex := g.listComponent.GetSelectedIndex()
+		gameRank := g.games[selectedIndex]["rank"].(string)
+
+		sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720_overlay.bmp", "Q1", "Q4")
+		sdlutils.RenderTexture(g.renderer, rankAssets[gameRank], "Q1", "Q4")
+		sdlutils.RenderTexture(g.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 	}
-
-	rankAssets := map[string]string{
-		"PLATINUM": "assets/textures/ui_game_display_rank_platinum_1280_720.bmp",
-		"GOLD":     "assets/textures/ui_game_display_rank_gold_1280_720.bmp",
-		"SILVER":   "assets/textures/ui_game_display_rank_silver_1280_720.bmp",
-		"BRONZE":   "assets/textures/ui_game_display_rank_bronze_1280_720.bmp",
-		"FAULTY":   "assets/textures/ui_game_display_rank_faulty_1280_720.bmp",
-	}
-	selectedIndex := g.listComponent.GetSelectedIndex()
-	gameRank := g.games[selectedIndex]["rank"].(string)
-
-	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_game_display_1280_720_overlay.bmp", "Q1", "Q4")
-	sdlutils.RenderTexture(g.renderer, rankAssets[gameRank], "Q1", "Q4")
-	sdlutils.RenderTexture(g.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
 
 	g.renderer.Present()
 }
