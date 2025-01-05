@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"handheldui/output"
 	"handheldui/vars"
-	"log"
+	"output"
 	"strings"
 
 	"github.com/veandco/go-sdl2/img"
@@ -12,7 +12,6 @@ import (
 )
 
 func getImagePath(str string) string {
-	fmt.Println(vars.Config.Screen.AspectRatio)
 	return strings.ReplaceAll(str, "$aspect_ratio", vars.Config.Screen.AspectRatio)
 }
 
@@ -134,7 +133,7 @@ func RenderScaledTexture(renderer *sdl.Renderer, imgPath string, x, y int32, sca
 	// Load the texture
 	texture, err := LoadTexture(renderer, imgPath)
 	if err != nil {
-		log.Printf("Error loading texture: %s, %v", imgPath, err)
+		output.Printf("Error loading texture: %s, %v", imgPath, err)
 		return
 	}
 	defer texture.Destroy()
@@ -142,7 +141,7 @@ func RenderScaledTexture(renderer *sdl.Renderer, imgPath string, x, y int32, sca
 	// Get texture dimensions
 	_, _, width, height, err := texture.Query()
 	if err != nil {
-		log.Printf("Error querying texture: %v", err)
+		output.Printf("Error querying texture: %v", err)
 		return
 	}
 
@@ -161,7 +160,7 @@ func RenderScaledTexture(renderer *sdl.Renderer, imgPath string, x, y int32, sca
 	// Use RenderTexture to render
 	err = RenderTexture(renderer, imgPath, dstRect, scale, false)
 	if err != nil {
-		log.Printf("Error rendering texture: %v", err)
+		output.Printf("Error rendering texture: %v", err)
 	}
 }
 
@@ -172,14 +171,14 @@ func RenderTextureCover(renderer *sdl.Renderer, imagePath string) {
 	// Load and calculate the aspect of the image
 	textureSurface, err := sdl.LoadBMP(imagePath)
 	if err != nil {
-		fmt.Printf("Error loading texture image: %v\n", err)
+		output.Errorf("Error loading texture image: %v\n", err)
 		return
 	}
 	defer textureSurface.Free()
 
 	textureTexture, err := renderer.CreateTextureFromSurface(textureSurface)
 	if err != nil {
-		fmt.Printf("Error creating texture from image: %v\n", err)
+		output.Errorf("Error creating texture from image: %v\n", err)
 		return
 	}
 	defer textureTexture.Destroy()
@@ -189,6 +188,6 @@ func RenderTextureCover(renderer *sdl.Renderer, imagePath string) {
 	// Use RenderTexture to render
 	err = RenderTexture(renderer, imagePath, dstRect, 1, true)
 	if err != nil {
-		fmt.Printf("Error rendering texture: %v\n", err)
+		output.Errorf("Error rendering texture: %v\n", err)
 	}
 }
