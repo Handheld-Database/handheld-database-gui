@@ -12,7 +12,7 @@ import (
 	"golang.org/x/image/webp"
 )
 
-func FetchGameImage(gameName string) string {
+func FetchGameImage(gameName string, sufix string) string {
 	imagePath := fmt.Sprintf(".cache/images/%s.bmp", gameName)
 
 	// Verificar se o diretório existe, se não, criar
@@ -30,7 +30,7 @@ func FetchGameImage(gameName string) string {
 		return imagePath
 	}
 
-	imageURL := fmt.Sprintf("https://handheld-database.github.io/handheld-database/commons/images/games/%s.icon.webp", gameName)
+	imageURL := fmt.Sprintf("https://handheld-database.github.io/handheld-database/commons/images/games/%s.%s.webp", gameName, sufix)
 	response, err := http.Get(imageURL)
 	if err != nil {
 		output.Errorf("HTTP request error: %v\n", err)

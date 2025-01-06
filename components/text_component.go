@@ -3,6 +3,7 @@ package components
 import (
 	"handheldui/helpers/sdlutils"
 	"handheldui/output"
+	"handheldui/vars"
 	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -20,10 +21,15 @@ type TextComponent struct {
 }
 
 func NewTextComponent(renderer *sdl.Renderer, text string, font *ttf.Font, maxVisibleLines int, maxWidth int) *TextComponent {
+	visibleLines := maxVisibleLines
+	if maxVisibleLines > vars.Config.Screen.MaxLines {
+		visibleLines = maxVisibleLines
+	}
+
 	component := &TextComponent{
 		renderer:        renderer,
 		text:            text,
-		maxVisibleLines: maxVisibleLines,
+		maxVisibleLines: visibleLines,
 		font:            font,
 		maxWidth:        maxWidth,
 	}

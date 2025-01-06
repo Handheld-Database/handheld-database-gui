@@ -19,8 +19,8 @@ type Element struct {
 // NewElement creates a new element with the given dimensions and texture
 func NewElement(width, height, padding, margin int32, position string) *Element {
 	return &Element{
-		ScreenHeight: vars.Config.Screen["height"],
-		ScreenWidth:  vars.Config.Screen["width"],
+		ScreenHeight: vars.Config.Screen.Height,
+		ScreenWidth:  vars.Config.Screen.Width,
 		Width:        width,
 		Height:       height,
 		Padding:      padding,

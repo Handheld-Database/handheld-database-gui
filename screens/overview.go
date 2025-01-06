@@ -44,7 +44,7 @@ func (o *OverviewScreen) InitOverview() {
 	plainOverview := markdown.MarkdownToPlaintext(overview)
 
 	o.textContent = strings.ReplaceAll(plainReview, "%game_overview%", plainOverview)
-	o.textComponent = components.NewTextComponent(o.renderer, o.textContent, vars.LongTextFont, 18, 1200)
+	o.textComponent = components.NewTextComponent(o.renderer, o.textContent, vars.LongTextFont, vars.Config.Screen.MaxLines, int(vars.Config.Screen.Width)-20)
 
 	o.initialized = true
 }
@@ -68,9 +68,9 @@ func (o *OverviewScreen) Draw() {
 	o.renderer.SetDrawColor(0, 0, 0, 255) // Background color
 	o.renderer.Clear()
 
-	sdlutils.RenderTexture(o.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+	sdlutils.RenderTextureCartesian(o.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
-	sdlutils.RenderTexture(o.renderer, "assets/textures/bg_overlay.bmp", "Q2", "Q4")
+	sdlutils.RenderTextureCartesian(o.renderer, "assets/textures/bg_overlay.bmp", "Q2", "Q4")
 
 	// Draw the title
 	sdlutils.DrawText(o.renderer, "Overview", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
@@ -78,7 +78,7 @@ func (o *OverviewScreen) Draw() {
 	// Draw the text component with scrolling
 	o.textComponent.Draw(vars.Colors.WHITE)
 
-	sdlutils.RenderTexture(o.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
+	sdlutils.RenderTextureCartesian(o.renderer, "assets/textures/$aspect_ratio/ui_controls.bmp", "Q3", "Q4")
 
 	o.renderer.Present()
 }

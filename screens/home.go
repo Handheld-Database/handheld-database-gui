@@ -17,9 +17,13 @@ type HomeScreen struct {
 }
 
 func NewHomeScreen(renderer *sdl.Renderer) (*HomeScreen, error) {
-	listComponent := components.NewListComponent(renderer, 10, func(index int, item map[string]interface{}) string {
-		return item["label"].(string)
-	})
+	listComponent := components.NewListComponent(
+		renderer,
+		vars.Config.Screen.MaxListItens,
+		vars.Config.Screen.MaxListItemWidth,
+		func(index int, item map[string]interface{}) string {
+			return item["label"].(string)
+		})
 
 	return &HomeScreen{
 		renderer:      renderer,
@@ -68,7 +72,7 @@ func (h *HomeScreen) Draw() {
 	h.renderer.SetDrawColor(255, 255, 255, 255)
 	h.renderer.Clear()
 
-	sdlutils.RenderTexture(h.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
+	sdlutils.RenderTextureCartesian(h.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Draw the current title
 	sdlutils.DrawText(h.renderer, "Home", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
@@ -76,7 +80,7 @@ func (h *HomeScreen) Draw() {
 	// Draw the list component
 	h.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
 
-	sdlutils.RenderTexture(h.renderer, "assets/textures/ui_controls_1280_720.bmp", "Q3", "Q4")
+	sdlutils.RenderTextureCartesian(h.renderer, "assets/textures/$aspect_ratio/ui_controls.bmp", "Q3", "Q4")
 
 	h.renderer.Present()
 }
