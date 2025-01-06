@@ -27,9 +27,13 @@ type GamesScreen struct {
 }
 
 func NewGamesScreen(renderer *sdl.Renderer) (*GamesScreen, error) {
-	listComponent := components.NewListComponent(renderer, vars.Config.Screen.MaxListItens, func(index int, item map[string]interface{}) string {
-		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
-	})
+	listComponent := components.NewListComponent(
+		renderer,
+		vars.Config.Screen.MaxListItens,
+		vars.Config.Screen.MaxListItemWidth/2,
+		func(index int, item map[string]interface{}) string {
+			return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
+		})
 
 	g := &GamesScreen{
 		renderer:      renderer,

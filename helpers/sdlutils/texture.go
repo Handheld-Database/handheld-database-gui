@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"handheldui/output"
 	"handheldui/vars"
-	"output"
 	"strings"
 
 	"github.com/veandco/go-sdl2/img"

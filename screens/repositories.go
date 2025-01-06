@@ -16,9 +16,13 @@ type RepositoriesScreen struct {
 }
 
 func NewRepositoriesScreen(renderer *sdl.Renderer) (*RepositoriesScreen, error) {
-	listComponent := components.NewListComponent(renderer, vars.Config.Screen.MaxListItens, func(index int, item map[string]interface{}) string {
-		return item["name"].(string)
-	})
+	listComponent := components.NewListComponent(
+		renderer,
+		vars.Config.Screen.MaxListItens,
+		vars.Config.Screen.MaxListItemWidth,
+		func(index int, item map[string]interface{}) string {
+			return item["name"].(string)
+		})
 
 	return &RepositoriesScreen{
 		renderer:      renderer,

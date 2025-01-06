@@ -15,18 +15,25 @@ type ListComponent struct {
 	scrollOffset    int
 	itemFormatter   func(index int, item map[string]interface{}) string
 	maxVisibleItems int
+	itemWidth       int
 }
 
-func NewListComponent(renderer *sdl.Renderer, maxVisibleItems int, itemFormatter func(index int, item map[string]interface{}) string) *ListComponent {
+func NewListComponent(renderer *sdl.Renderer, maxVisibleItems, maxItemWidth int, itemFormatter func(index int, item map[string]interface{}) string) *ListComponent {
 	itemsInList := maxVisibleItems
 	if maxVisibleItems > vars.Config.Screen.MaxListItens {
 		itemsInList = vars.Config.Screen.MaxListItens
+	}
+
+	itemWidth := maxItemWidth
+	if maxItemWidth > vars.Config.Screen.MaxListItemWidth {
+		itemWidth = vars.Config.Screen.MaxListItemWidth
 	}
 
 	return &ListComponent{
 		renderer:        renderer,
 		itemFormatter:   itemFormatter,
 		maxVisibleItems: itemsInList,
+		itemWidth:       itemWidth,
 		items:           []map[string]interface{}{},
 	}
 }
@@ -101,8 +108,8 @@ func (l *ListComponent) Draw(primaryColor sdl.Color, selectedColor sdl.Color) {
 		itemText := l.itemFormatter(index+startIndex, item)
 
 		// Check if the itemText exceeds MaxListItemWidth and truncate with "..."
-		if len(itemText) > vars.Config.Screen.MaxListItemWidth {
-			itemText = itemText[:vars.Config.Screen.MaxListItemWidth-3] + "..."
+		if len(itemText) > l.itemWidth {
+			itemText = itemText[:l.itemWidth-3] + "..."
 		}
 
 		textSurface, err := sdlutils.RenderText(itemText, color, vars.BodyFont)

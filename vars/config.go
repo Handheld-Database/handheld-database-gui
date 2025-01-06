@@ -110,8 +110,8 @@ func calculateMaxLineWidth(aspectRatio string) int {
 
 func calculateMaxListItemWidth(aspectRatio string) int {
 	aspectRatios := map[string]int{
-		"16:9": 30,
-		"4:3":  25,
+		"16:9": 60,
+		"4:3":  50,
 		"3:2":  20,
 		"21:9": 60,
 		"32:9": 50,

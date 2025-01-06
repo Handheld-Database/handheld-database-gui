@@ -20,9 +20,13 @@ type SystemsScreen struct {
 }
 
 func NewSystemsScreen(renderer *sdl.Renderer) (*SystemsScreen, error) {
-	listComponent := components.NewListComponent(renderer, vars.Config.Screen.MaxListItens, func(index int, item map[string]interface{}) string {
-		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
-	})
+	listComponent := components.NewListComponent(
+		renderer,
+		vars.Config.Screen.MaxListItens,
+		vars.Config.Screen.MaxListItemWidth,
+		func(index int, item map[string]interface{}) string {
+			return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
+		})
 
 	s := &SystemsScreen{
 		detectedPlatform: vars.CurrentPlatform,

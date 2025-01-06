@@ -29,9 +29,13 @@ type FilesScreen struct {
 }
 
 func NewFilesScreen(renderer *sdl.Renderer) (*FilesScreen, error) {
-	listComponent := components.NewListComponent(renderer, vars.Config.Screen.MaxListItens, func(index int, item map[string]interface{}) string {
-		return item["name"].(string)
-	})
+	listComponent := components.NewListComponent(
+		renderer,
+		vars.Config.Screen.MaxListItens,
+		vars.Config.Screen.MaxListItemWidth,
+		func(index int, item map[string]interface{}) string {
+			return item["name"].(string)
+		})
 
 	progressBar := components.NewProgressBarComponent(renderer, 300, 20, 490, 320, vars.Colors.WHITE, vars.Colors.SECONDARY)
 

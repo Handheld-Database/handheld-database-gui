@@ -20,9 +20,13 @@ type ReviewsScreen struct {
 }
 
 func NewReviewsScreen(renderer *sdl.Renderer) (*ReviewsScreen, error) {
-	listComponent := components.NewListComponent(renderer, vars.Config.Screen.MaxListItens, func(index int, item map[string]interface{}) string {
-		return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
-	})
+	listComponent := components.NewListComponent(
+		renderer,
+		vars.Config.Screen.MaxListItens,
+		vars.Config.Screen.MaxListItemWidth,
+		func(index int, item map[string]interface{}) string {
+			return fmt.Sprintf("%d. %s", index+1, item["name"].(string))
+		})
 
 	s := &ReviewsScreen{
 		renderer:      renderer,
@@ -84,7 +88,7 @@ func (r *ReviewsScreen) Draw() {
 	sdlutils.RenderTextureCartesian(r.renderer, "assets/textures/bg.bmp", "Q2", "Q4")
 
 	// Draw the current title
-	sdlutils.DrawText(r.renderer, "Reviews List", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
+	sdlutils.DrawText(r.renderer, "Reviewers List", sdl.Point{X: 25, Y: 25}, vars.Colors.WHITE, vars.HeaderFont)
 
 	// Draw the list component
 	r.listComponent.Draw(vars.Colors.SECONDARY, vars.Colors.WHITE)
