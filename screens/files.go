@@ -197,7 +197,9 @@ func (f *FilesScreen) downloadFile(path string, selectedItem map[string]interfac
 		if f.progressBar.GetProgress() >= 100 {
 			f.isDownloading = false
 			if unzip {
-				f.unzipFile(path, fileName)
+				splitedPath := strings.Split(fileName, "/")
+				deepSize := len(splitedPath) - 1
+				f.unzipFile(path, splitedPath[deepSize])
 			}
 		}
 	})
@@ -211,18 +213,22 @@ func (f *FilesScreen) downloadFile(path string, selectedItem map[string]interfac
 }
 
 func (f *FilesScreen) unzipFile(path string, fileName string) {
-	destDir := path
+	// Caminho completo do arquivo ZIP
 	zipFilePath := filepath.Join(path, fileName)
 
-	// Call the UnzipFile function inside a goroutine to perform the extraction
+	// Destino da extração (diretório atual sem subpastas adicionais)
+	destDir := path
+
+	// Executa a descompactação em uma goroutine
 	go func() {
+		// Chama a função de descompactação com os caminhos corretos
 		err := wrappers.UnzipFile(zipFilePath, destDir)
 		if err != nil {
 			output.Printf("Error extracting file: %v\n", err)
 			return
 		}
 
-		// Remove the ZIP file after extraction
+		// Remove o arquivo ZIP após a extração
 		err = os.Remove(zipFilePath)
 		if err != nil {
 			output.Printf("Error removing zip file: %v\n", err)

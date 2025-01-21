@@ -2,6 +2,7 @@ package wrappers
 
 import (
 	"fmt"
+	"handheldui/output"
 	"os"
 	"os/exec"
 )
@@ -15,6 +16,7 @@ func UnzipFile(src, dest string) error {
 	}
 
 	// Prepare the unzip command to extract the file
+	output.Sprintf("%s %s %s %s", "unzip", "-o", src, "-d", dest)
 	cmd := exec.Command("unzip", "-o", src, "-d", dest)
 
 	// Redirect stdout and stderr to monitor the progress
