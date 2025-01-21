@@ -3,20 +3,31 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"handheldui/output"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 )
 
 var (
 	cacheLock sync.RWMutex
 )
+
+// File represents the structure of a file in the XML metadata.
+type File struct {
+	Name string `xml:"name,attr"`
+}
+
+// Files represents the root structure of the XML metadata.
+type Files struct {
+	File []File `xml:"file"`
+}
 
 // Returns the cache file path specific to the given name
 func getCacheFilePath(name string) string {
@@ -38,14 +49,8 @@ func loadCacheFromFile(name string) (map[string]string, error) {
 	}
 	defer cacheFile.Close()
 
-	// Reads the content of the file
-	cacheData, err := ioutil.ReadAll(cacheFile)
-	if err != nil {
-		return nil, output.Errorf("error reading cache file: %v", err)
-	}
-
 	// Decodes the data into the cache
-	if err := json.Unmarshal(cacheData, &cache); err != nil {
+	if err := json.NewDecoder(cacheFile).Decode(&cache); err != nil {
 		return nil, output.Errorf("error decoding cache data: %v", err)
 	}
 
@@ -68,14 +73,8 @@ func saveCacheToFile(name string, cache map[string]string) error {
 	defer cacheFile.Close()
 
 	// Encodes the cache data to the file
-	cacheData, err := json.MarshalIndent(cache, "", "  ")
-	if err != nil {
+	if err := json.NewEncoder(cacheFile).Encode(cache); err != nil {
 		return output.Errorf("error encoding cache data: %v", err)
-	}
-
-	// Writes the data to the file
-	if _, err := cacheFile.Write(cacheData); err != nil {
-		return output.Errorf("error writing to cache file: %v", err)
 	}
 
 	return nil
@@ -95,11 +94,10 @@ func FetchMetadata(name string) (map[string]string, error) {
 	}
 
 	// Downloads the metadata from the URL
-	resp, err := http.Get(fmt.Sprintf("https://archive.org/metadata/%s", name))
+	resp, err := http.Get(fmt.Sprintf("https://archive.org/download/%s/%s_files.xml", name, name))
 	if err != nil {
 		return nil, output.Errorf("error fetching metadata for %s: %v", name, err)
 	}
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
@@ -107,20 +105,16 @@ func FetchMetadata(name string) (map[string]string, error) {
 	}
 
 	// Decodes the metadata
-	var metadata struct {
-		Files []struct {
-			Name string `json:"name"`
-		} `json:"files"`
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&metadata); err != nil {
+	var metadata Files
+	if err := xml.NewDecoder(resp.Body).Decode(&metadata); err != nil {
 		return nil, output.Errorf("error decoding response: %v", err)
 	}
 
 	// Processes the metadata
 	metadataList := make(map[string]string)
-	for _, file := range metadata.Files {
-		metadataList[file.Name] = fmt.Sprintf("https://archive.org/download/%s/%s", name, file.Name)
+	for _, file := range metadata.File {
+		escapedFileName := strings.ReplaceAll(file.Name, " ", "%20")
+		metadataList[file.Name] = fmt.Sprintf("https://archive.org/download/%s/%s", name, escapedFileName)
 	}
 
 	// Sorts the files by name
@@ -147,59 +141,15 @@ func FetchMetadata(name string) (map[string]string, error) {
 	return sortedMetadataList, nil
 }
 
-func FetchAllMetadata(names []string) ([]map[string]string, error) {
-	var (
-		allMetadata []map[string]string
-		mu          sync.Mutex
-		wg          sync.WaitGroup
-		errs        []error
-	)
-
-	// Channel to synchronize results
-	results := make(chan map[string]string, len(names))
-
-	// Iterates over each name and fetches metadata
-	for _, name := range names {
-		wg.Add(1)
-		go func(name string) {
-			defer wg.Done()
-
-			metadata, err := FetchMetadata(name)
-			if err != nil {
-				mu.Lock()
-				errs = append(errs, output.Errorf("error fetching metadata for %s: %v", name, err))
-				mu.Unlock()
-				return
-			}
-
-			results <- metadata
-		}(name)
-	}
-
-	// Waits for all goroutines to finish
-	wg.Wait()
-	close(results)
-
-	// Checks for accumulated errors
-	if len(errs) > 0 {
-		return nil, output.Errorf("errors while fetching metadata: %v", errs)
-	}
-
-	// Combines the results
-	for metadata := range results {
-		allMetadata = append(allMetadata, metadata)
-	}
-
-	return allMetadata, nil
-}
-
 func DownloadFile(ctx context.Context, path, filename, link string, progress func(int64, int64)) error {
-	// Creates the destination directory if necessary
+	// Ensure the destination directory is created
 	if err := os.MkdirAll(path, 0755); err != nil {
 		return output.Errorf("error creating directory %s: %v", path, err)
 	}
 
-	fullPath := filepath.Join(path, filename)
+	// Sanitize the filename to prevent issues with special characters
+	sanitizedFilename := filepath.Base(filename)
+	fullPath := filepath.Join(path, sanitizedFilename)
 
 	// Starts the download
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, link, nil)
