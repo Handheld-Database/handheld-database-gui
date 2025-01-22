@@ -64,12 +64,12 @@ func calculateAspectRatio(width, height int32) string {
 	ratio := float64(width) / float64(height)
 
 	aspectRatios := map[float64]string{
-		16.0 / 9.0: "16:9",
-		4.0 / 3.0:  "4:3",
-		3.0 / 2.0:  "3:2",
-		21.0 / 9.0: "21:9",
-		32.0 / 9.0: "32:9",
-		1.0:        "1:1",
+		16.0 / 9.0: "16_9",
+		4.0 / 3.0:  "4_3",
+		3.0 / 2.0:  "3_2",
+		21.0 / 9.0: "21_9",
+		32.0 / 9.0: "32_9",
+		1.0:        "1_1",
 	}
 
 	tolerance := 0.01
@@ -84,12 +84,12 @@ func calculateAspectRatio(width, height int32) string {
 
 func calculateMaxLines(aspectRatio string) int {
 	aspectRatios := map[string]int{
-		"16:9": 15,
-		"4:3":  15,
-		"3:2":  15,
-		"21:9": 15,
-		"32:9": 15,
-		"1:0":  15,
+		"16_9": 15,
+		"4_3":  15,
+		"3_2":  15,
+		"21_9": 15,
+		"32_9": 15,
+		"1_0":  15,
 	}
 
 	return aspectRatios[aspectRatio]
@@ -97,12 +97,12 @@ func calculateMaxLines(aspectRatio string) int {
 
 func calculateMaxLineWidth(aspectRatio string) int {
 	aspectRatios := map[string]int{
-		"16:9": 30,
-		"4:3":  25,
-		"3:2":  20,
-		"21:9": 60,
-		"32:9": 50,
-		"1:0":  10,
+		"16_9": 30,
+		"4_3":  25,
+		"3_2":  20,
+		"21_9": 60,
+		"32_9": 50,
+		"1_0":  10,
 	}
 
 	return aspectRatios[aspectRatio]
@@ -110,12 +110,12 @@ func calculateMaxLineWidth(aspectRatio string) int {
 
 func calculateMaxListItemWidth(aspectRatio string) int {
 	aspectRatios := map[string]int{
-		"16:9": 60,
-		"4:3":  50,
-		"3:2":  20,
-		"21:9": 60,
-		"32:9": 50,
-		"1:0":  10,
+		"16_9": 60,
+		"4_3":  50,
+		"3_2":  20,
+		"21_9": 60,
+		"32_9": 50,
+		"1_0":  10,
 	}
 
 	return aspectRatios[aspectRatio]
@@ -123,12 +123,12 @@ func calculateMaxListItemWidth(aspectRatio string) int {
 
 func calculateMaxListItens(aspectRatio string) int {
 	aspectRatios := map[string]int{
-		"16:9": 10,
-		"4:3":  11,
-		"3:2":  15,
-		"21:9": 10,
-		"32:9": 10,
-		"1:0":  10,
+		"16_9": 10,
+		"4_3":  11,
+		"3_2":  15,
+		"21_9": 10,
+		"32_9": 10,
+		"1_0":  10,
 	}
 
 	return aspectRatios[aspectRatio]
